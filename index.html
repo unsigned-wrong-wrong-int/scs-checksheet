@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ja">
+   <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>移行チェックシート</title>
+      <script src="./main.js" type="module"></script>
+      <style>
+         table {
+            border: solid 2px;
+            /* border-collapse: collapse; */
+         }
+         th, td {
+            border: solid 1px;
+         }
+      </style>
+   </head>
+   <body>
+      <div id="list">
+         <table>
+            <thead>
+               <tr>
+                  <th>移行区分</th>
+                  <th>応募要件</th>
+                  <th>成績点</th>
+               </tr>
+            </thead>
+            <tbody id="partitions">
+            </tbody>
+         </table>
+      </div>
+      <div id="sheet">
+         <table>
+            <thead>
+               <tr>
+                  <th rowspan="2" colspan="2">応募要件</th>
+                  <th colspan="2">履修状況</th>
+                  <th rowspan="2">科目番号</th>
+                  <th rowspan="2">科目名</th>
+                  <th rowspan="2">単位</th>
+                  <th rowspan="2">重み</th>
+                  <th colspan="3">上限単位数</th>
+               </tr>
+               <tr>
+                  <th>修得</th>
+                  <th>履修中</th>
+                  <th colspan="2">重点科目</th>
+                  <th></th>
+               </tr>
+            </thead>
+            <tbody id="specified-subjects">
+            </tbody>
+         </table>
+         <table>
+            <thead>
+               <tr>
+                  <th>科目番号</th>
+                  <th>科目名</th>
+                  <th>評点</th>
+                  <th>単位</th>
+                  <th>重み</th>
+                  <th>成績点</th>
+               </tr>
+            </thead>
+            <tbody id="score-details">
+            </tbody>
+         </table>
+      </div>
+   </body>
+</html>
