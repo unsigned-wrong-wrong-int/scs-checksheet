@@ -16,6 +16,48 @@
       </style>
    </head>
    <body>
+      <div id="input">
+         <table>
+            <thead>
+               <tr>
+                  <th>科目名</th>
+                  <th>単位</th>
+                  <th>履修状況</th>
+               </tr>
+            </thead>
+            <tbody id="common-subjects">
+            </tbody>
+         </table>
+         <table>
+            <thead>
+               <tr>
+                  <th>科目番号</th>
+                  <th>科目名</th>
+                  <th>単位</th>
+                  <th>評点</th>
+                  <th></th>
+               </tr>
+            </thead>
+            <tbody id="other-subjects">
+               <tr>
+                  <td>
+                     <input id="subject-id" type="text" pattern="[\dA-Z]{7}" placeholder="科目番号">
+                     <br>
+                     <input id="is-last-year" type="checkbox">
+                     <label for="is-last-year">前年度分</label>
+                  </td>
+                  <td>
+                     <output id="subject-name" for="subject-id"></output>
+                     <br>
+                     <output id="error-message" for="subject-id"></output>
+                  </td>
+                  <td><output id="subject-credit" for="subject-id"></output></td>
+                  <td></td>
+                  <td><button id="add-subject" disabled>追加</button></td>
+               </tr>
+            </tbody>
+         </table>
+      </div>
       <div id="list">
          <table>
             <thead>

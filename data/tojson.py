@@ -47,7 +47,7 @@ def subject(row):
     id_, name, credit, semester, _, info = row
     credit = float(credit)
     this_year = re.search(r'秋(?:A?B?C|学期)|春季休業中|通年', semester) is None
-    flags = 0 if this_year else 64
+    flags = 0 if this_year else 32
     if re.match(r'21.*', id_) is None:
         flags |= 1
     if re.match(r'[A-Y].*', id_) is not None:
@@ -59,7 +59,7 @@ def subject(row):
         if re.match(r'AB6.*|C[CE].*|AC(?:50H[1267]|6[34]E4|63G[01]|64A[2-5]|65E[2-5]|65A[1-467])1', id_) is not None:
             flags |= 16
     elif re.match(r'3[2-7][HJKL].*', id_) is not None:
-        flags |= 32
+        flags |= 64
     return (id_, [name, credit, flags, *normalize(id_)])
 
 wb = load_workbook(path.join(dir_, 'kdb.xlsx'), read_only=True)
@@ -69,13 +69,26 @@ try:
 finally:
     wb.close()
 
+common = [
+    ['ファーストイヤーセミナー', 1.0, 1024],
+    ['学問への誘い', 1.0, 2048],
+    ['情報リテラシー(講義)', 1.0, 512],
+    ['情報リテラシー(演習)', 1.0, 512],
+    ['データサイエンス', 2.0, 512],
+    ['English Reading Skills I', 1.0, 128],
+    ['English Presentation Skills I', 1.0, 128],
+    ['English Reading Skills II', 1.0, 256],
+    ['English Presentation Skills II', 1.0, 256],
+    ['基礎体育(春・秋)', 1.0, 64]
+]
+
 with open(path.join(dir_, 'info.json'), encoding='utf-8') as f:
     data = json.load(f)
 
 with open(path.join(dir_, 'table.json'), encoding='utf-8') as f:
     table = json.load(f)
 
-data.update(subjects=subjects, table=table)
+data.update(common=common, subjects=subjects, table=table)
 
 with open(path.join(dir_, 'data.json'), 'w', encoding='utf-8') as f:
     json.dump(data, f, ensure_ascii=False, separators=(',', ':'))

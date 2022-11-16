@@ -3,7 +3,31 @@ let data;
 const setup = async () => {
    data = await (await fetch("./data/data.json")).json();
 
+   initSubjectList();
    initPartitionList();
+};
+
+const initSubjectList = () => {
+   const select = document.createElement("select");
+   const opt1 = document.createElement("option");
+   opt1.innerText = "履修中";
+   const opt2 = document.createElement("option");
+   opt2.innerText = "修得";
+   const opt3 = document.createElement("option");
+   opt3.innerText = "未修得";
+   select.append(opt1, opt2, opt3);
+   const common = document.getElementById("common-subjects");
+   common.append(...data.common.map(([name, credit]) => {
+      const row = document.createElement("tr");
+      const nameCell = document.createElement("td");
+      nameCell.innerText = name;
+      const creditCell = document.createElement("td");
+      creditCell.innerText = credit;
+      const statusCell = document.createElement("td");
+      statusCell.append(select.cloneNode(true));
+      row.append(nameCell, creditCell, statusCell);
+      return row;
+   }));
 };
 
 const initPartitionList = () => {
