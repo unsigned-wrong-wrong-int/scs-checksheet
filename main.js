@@ -7,58 +7,54 @@ const setup = async () => {
    initPartitionList();
 };
 
+const newElem = (tag, attrs, children) => {
+   const elem = document.createElement(tag);
+   for (const [key, value] of Object.entries(attrs)) {
+      elem[key] = value;
+   }
+   if (children !== undefined) {
+      elem.append(...children);
+   }
+   return elem;
+};
+
 const initSubjectList = () => {
-   const select = document.createElement("select");
-   const opt1 = document.createElement("option");
-   opt1.innerText = "履修中";
-   const opt2 = document.createElement("option");
-   opt2.innerText = "修得";
-   const opt3 = document.createElement("option");
-   opt3.innerText = "未修得";
-   select.append(opt1, opt2, opt3);
+   const select = newElem("select", {
+      innerHTML: "<option>履修中</option><option>修得</option><option>未修得</option>",
+   });
    const common = document.getElementById("common-subjects");
-   common.append(...data.common.map(([name, credit]) => {
-      const row = document.createElement("tr");
-      const nameCell = document.createElement("td");
-      nameCell.innerText = name;
-      const creditCell = document.createElement("td");
-      creditCell.innerText = credit;
-      const statusCell = document.createElement("td");
-      statusCell.append(select.cloneNode(true));
-      row.append(nameCell, creditCell, statusCell);
-      return row;
+   common.append(...data.common.map(id => {
+      const [name, credit] = data.subjects[id];
+      return newElem("tr", {}, [
+         newElem("td", {innerText: name}),
+         newElem("td", {innerText: credit}),
+         newElem("td", {}, [select.cloneNode(true)])
+      ]);
    }));
 };
 
 const initPartitionList = () => {
    const partitons = document.getElementById("partitions");
    partitons.append(...data.table.map(({name}, index) => {
-      const row = document.createElement("tr");
+      const row = newElem("tr", {}, [
+         newElem("td", {innerText: name}),
+         newElem("td", {innerText: "―"}),
+         newElem("td", {innerText: "0"}),
+      ]);
       row.addEventListener("click", () => createCheckSheet(index));
-      const nameCell = document.createElement("td");
-      nameCell.innerText = name;
-      const stateCell = document.createElement("td");
-      stateCell.innerText = "―";
-      const scoreCell = document.createElement("td");
-      scoreCell.innerText = "0";
-      row.append(nameCell, stateCell, scoreCell);
       return row;
    }));
 };
 
 const createRow = id => {
    const subject = data.subjects[id];
-   const idCell = document.createElement("td");
-   idCell.innerText = typeof id === "number" ? "" : id;
-   const nameCell = document.createElement("td");
-   nameCell.innerText = subject[0];
-   const creditCell = document.createElement("td");
-   creditCell.innerText = subject[1] === 0 ? "" : subject[1];
-   const cell1 = document.createElement("td");
-   const cell2 = document.createElement("td");
-   cell1.innerText = cell2.innerText = "0";
-   const row = document.createElement("tr");
-   row.append(cell1, cell2, idCell, nameCell, creditCell);
+   const row = newElem("tr", {}, [
+      newElem("td", {innerText: "0"}),
+      newElem("td", {innerText: "0"}),
+      newElem("td", {innerText: typeof id === "number" ? "" : id}),
+      newElem("td", {innerText: subject[0]}),
+      newElem("td", {innerText: subject[1] === 0 ? "" : subject[1]}),
+   ]);
    return row;
 };
 
@@ -67,50 +63,44 @@ const prependMin = (rows, min) => {
    for (const [index, n, ...sub] of min) {
       const [begin, end] = typeof index === "number" ? [index, index] : index;
       if (current < begin) {
-         const cell = document.createElement("td");
-         cell.rowSpan = begin - current;
-         cell.colSpan = 2;
-         rows[current].prepend(cell);
+         rows[current].prepend(newElem("td", {
+            rowSpan: begin - current,
+            colSpan: 2,
+         }));
       }
       if (sub.length > 0) {
          let current1 = begin;
          for (const [index1, m] of sub) {
             const [begin1, end1] = typeof index1 === "number" ? [index1, index1] : index1;
             if (current1 < begin1) {
-               const cell = document.createElement("td");
-               cell.rowSpan = begin1 - current1;
-               rows[current1].prepend(cell);
+               rows[current1].prepend(newElem("td", {
+                  rowSpan: begin1 - current1,
+               }));
             }
-            {
-               const cell = document.createElement("td");
-               cell.rowSpan = end1 - begin1 + 1;
-               cell.innerText = m < 0 ? `${-m}単位\nまで` : `${m}単位`;
-               rows[begin1].prepend(cell);
-            }
+            rows[begin1].prepend(newElem("td", {
+               rowSpan: end1 - begin1 + 1,
+               innerText: m < 0 ? `${-m}単位\nまで` : `${m}単位`,
+            }));
             current1 = end1 + 1;
          }
          if (current1 < end) {
-            const cell = document.createElement("td");
-            cell.rowSpan = end - current1 + 1;
-            rows[current1].prepend(cell);
+            rows[current1].prepend(newElem("td", {
+               rowSpan: end - current1 + 1,
+            }));
          }
       }
-      {
-         const cell = document.createElement("td");
-         cell.rowSpan = end - current + 1;
-         if (sub.length === 0) {
-            cell.colSpan = 2;
-         }
-         cell.innerText = `${n}単位`;
-         rows[begin].prepend(cell);
-      }
+      rows[begin].prepend(newElem("td", {
+         rowSpan: end - current + 1,
+         colSpan: sub.length === 0 ? 2 : 1,
+         innerText: `${n}単位`,
+      }));
       current = end + 1;
    }
    if (current < rows.length) {
-      const cell = document.createElement("td");
-      cell.rowSpan = rows.length - current;
-      cell.colSpan = 2;
-      rows[current].prepend(cell);
+      rows[current].prepend(newElem("td", {
+         rowSpan: rows.length - current,
+         colSpan: 2,
+      }));
    }
 };
 
@@ -119,26 +109,20 @@ const appendWeight = (rows, weight) => {
    for (const [index, w] of weight) {
       const [begin, end] = typeof index === "number" ? [index, index] : index;
       if (current < begin) {
-         const cell = document.createElement("td");
-         cell.rowSpan = begin - current;
-         rows[current].append(cell);
+         rows[current].append(newElem("td", {
+            rowSpan: begin - current,
+         }));
       }
-      {
-         const cell = document.createElement("td");
-         cell.rowSpan = end - begin + 1;
-         if (typeof w === "number") {
-            cell.innerText = w.toFixed(1);
-         } else {
-            cell.innerText = w.map(v => v.toFixed(1)).join("\n");
-         }
-         rows[begin].append(cell);
-      }
+      rows[begin].append(newElem("td", {
+         rowSpan: end - begin + 1,
+         innerText: typeof w === "number" ? w.toFixed(1) : w.map(v => v.toFixed(1)).join("\n"),
+      }));
       current = end + 1;
    }
    if (current < rows.length) {
-      const cell = document.createElement("td");
-      cell.rowSpan = rows.length - current;
-      rows[current].append(cell);
+      rows[current].append(newElem("td", {
+         rowSpan: rows.length - current,
+      }));
    }
 };
 
@@ -147,61 +131,49 @@ const appendMax = (rows, max) => {
    for (const [index, n, ...sub] of max.slice(1)) {
       const [begin, end] = typeof index === "number" ? [index, index] : index;
       if (current < begin) {
-         const cell = document.createElement("td");
-         cell.rowSpan = begin - current;
-         cell.colSpan = 2;
-         rows[current].append(cell);
+         rows[current].append(newElem("td", {
+            rowSpan: begin - current,
+            colSpan: 2,
+         }));
       }
       if (sub.length > 0) {
          let current1 = begin;
          for (const [index1, m] of sub) {
             const [begin1, end1] = typeof index1 === "number" ? [index1, index1] : index1;
             if (current1 < begin1) {
-               const cell = document.createElement("td");
-               cell.rowSpan = begin1 - current1;
-               rows[current1].append(cell);
+               rows[current1].append(newElem("td", {
+                  rowSpan: begin1 - current1,
+               }));
             }
-            {
-               const cell = document.createElement("td");
-               cell.rowSpan = end1 - begin1 + 1;
-               if (typeof m === "number") {
-                  cell.innerText = `${m}単位`;
-               } else {
-                  cell.innerText = m.map(l => `${l}単位`).join("\n");
-               }
-               rows[begin1].append(cell);
-            }
+            rows[begin1].append(newElem("td", {
+               rowSpan: end1 - begin1 + 1,
+               innerText: typeof m === "number" ? `${m}単位` : m.map(l => `${l}単位`).join("\n"),
+            }));
             current1 = end1 + 1;
          }
          if (current1 < end) {
-            const cell = document.createElement("td");
-            cell.rowSpan = end - current1 + 1;
-            rows[current1].append(cell);
+            rows[current1].append(newElem("td", {
+               rowSpan: end - current1 + 1,
+            }));
          }
       }
-      {
-         const cell = document.createElement("td");
-         cell.rowSpan = end - begin + 1;
-         if (sub.length === 0) {
-            cell.colSpan = 2;
-         }
-         cell.innerText = `${n}単位`;
-         rows[begin].append(cell);
-      }
+      rows[begin].append(newElem("td", {
+         rowSpan: end - begin + 1,
+         colSpan: sub.length === 0 ? 2 : 1,
+         innerText: `${n}単位`
+      }));
       current = end + 1;
    }
    if (current < rows.length) {
-      const cell = document.createElement("td");
-      cell.rowSpan = rows.length - current;
-      cell.colSpan = 2;
-      rows[current].append(cell);
+      rows[current].append(newElem("td", {
+         rowSpan: rows.length - current,
+         colSpan: 2,
+      }));
    }
-   {
-      const cell = document.createElement("td");
-      cell.rowSpan = 0;
-      cell.innerText = `${max[0]}単位`;
-      rows[0].append(cell);
-   }
+   rows[0].append(newElem("td", {
+      rowSpan: rows.length,
+      innerText: `${max[0]}単位`,
+   }));
 };
 
 const createCheckSheet = index => {
@@ -211,10 +183,7 @@ const createCheckSheet = index => {
    appendWeight(rows, weight);
    appendMax(rows, max);
    const table = document.getElementById("specified-subjects");
-   while (table.firstChild)  {
-      table.removeChild(table.firstChild);
-   }
-   table.append(...rows);
+   table.replaceChildren(...rows);
 };
 
 addEventListener("load", setup);
