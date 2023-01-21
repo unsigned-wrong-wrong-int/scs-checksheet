@@ -64,9 +64,9 @@ def subject(row):
         flags |= 4
         if (re.search(r'専門導入科目', info) or re.match(r'FCA1961|FE11431', id_)) is not None:
             flags |= 8 | 16
-        if re.match(r'HB(?:211[046-9]|212[03]|3113)1', id_) is not None:
-            flags |= 16
         if re.match(r'AB6.*|C[CE].*|AC(?:50H[1267]|6[34]E4|63G[01]|64A[2-5]|65E[2-5]|65A[1-467])1', id_) is not None:
+            flags |= 16
+        if re.match(r'HB(?:211[046-9]|212[03]|3113)1', id_) is not None:
             flags |= 32
     elif re.match(r'(?:2|3[2-7]).*', id_) is not None:
         flags = 1
