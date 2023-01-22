@@ -59,26 +59,23 @@ const GradeList = class {
       this.#list.splice(this.#list.indexOf(v), 1);
    }
 
-   getByCredit(id_n) {
-      return this.#list
-         .filter(v => v.subject.id_n === id_n && v.state !== STATE_FAIL)
-         .reduce((x, v) => x?.state <= v.state ? v : x, null);
+   #collect(id_n, pred) {
+      return this.#list.filter(typeof id_n === "number"
+         ? v => v.beforeFallC && (v.subject.flags & id_n) === id_n && pred(v)
+         : v => v.subject.id_n === id_n && pred(v));
    }
 
-   getByScore(id_n) {
-      return this.#list
-         .filter(v => v.subject.id_n === id_n)
-         .reduce((x, v) => +x?.score <= +v.score ? v : x, null);
+   *enumWithCredit(id_n) {
+      yield* this.#collect(id_n, v => v.state !== STATE_FAIL);
    }
 
-   collect(flags) {
-      return [...this.#list
-         .filter(v => v.beforeFallC && (v.subject.flags & flags) === flags)
+   *enumBestScore(id_n) {
+      yield* this.#collect(id_n, v => v.score !== null)
          .reduce((m, v) =>
-            !m.has(v.subject.id_n) || +m.get(v.subject.id_n).score <= +v.score
+            !m.has(v.subject.id_n) || m.get(v.subject.id_n).score < v.score
                ? m.set(v.subject.id_n, v) : m
-         , new Map())
-         .values()];
+            , new Map())
+         .values();
    }
 
    get length() {

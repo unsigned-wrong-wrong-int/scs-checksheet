@@ -38,14 +38,12 @@ const CheckContext = class {
    checkSpan(span) {
       let credit = 0, currCredit = 0;
       for (let i = span.first; i <= span.last; ++i) {
-         const v = this.grade.getByCredit(this.list[i]);
-         if (v === null || v.state === STATE_FAIL) {
-            continue;
-         }
-         if (v.state === STATE_PASS) {
-            credit += v.subject.credit;
-         } else {
-            currCredit += v.subject.credit;
+         for (const v of this.grade.enumWithCredit(this.list[i])) {
+            if (v.state === STATE_PASS) {
+               credit += v.subject.credit;
+            } else {
+               currCredit += v.subject.credit;
+            }
          }
       }
       if (span.limit) {
