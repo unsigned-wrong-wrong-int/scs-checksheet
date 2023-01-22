@@ -18,9 +18,7 @@ patterns = [
     (r'GA14121', r'GA14111'),
     (r'HC30241', r'HC30141'),
     (r'HC21371', r'HC36191'),
-    (r'HC21271', r'HC21071'),
-    (r'21...[2468]', r'19'),
-    (r'21...[3579]', r'20')
+    (r'HC21271', r'HC21071')
 ]
 
 def normalize(id_):
@@ -30,29 +28,34 @@ def normalize(id_):
             yield id_n
             break
 
-subjects = {
-    '0': ['全ての科目', 0, 1],
-    '1': ['全ての科目(初修外国語・体育を除く)', 0, 2],
-    '2': ['専門基礎科目・専門科目', 0, 4],
-    '3': ['専門導入科目', 0, 8],
-    '4': ['専門導入科目・看護学類が指定する科目', 0, 16],
-    '5': ['医学類開設科目', 0, 32],
-    '6': ['体育(春・秋)', 1, 128],
-    '7': ['英語(春)', 2, 256],
-    '8': ['英語(春・秋)', 4, 512],
-    '9': ['情報', 4, 1024],
-    '10': ['ファーストイヤーセミナー', 1, 0],
-    '11': ['学問への誘い', 1, 0],
-    '12': ['情報リテラシー(講義)', 1, 1024],
-    '13': ['情報リテラシー(演習)', 1, 1024],
-    '14': ['データサイエンス', 2, 1024],
-    '15': ['English Reading Skills I', 1, 256 | 512],
-    '16': ['English Presentation Skills I', 1, 256 | 512],
-    '17': ['English Reading Skills II', 1, 256],
-    '18': ['English Presentation Skills II', 1, 256],
-    '19': ['基礎体育(春)', 0.5, 128],
-    '20': ['基礎体育(秋)', 0.5, 128]
+special = {
+    1: ['全ての科目', 0],
+    2: ['全ての科目(初修外国語・体育を除く)', 0],
+    4: ['専門基礎科目・専門科目', 0],
+    8: ['専門導入科目', 0],
+    16: ['専門導入科目・看護学類指定の科目', 0],
+    32: ['医学類開設科目', 0],
+    128: ['体育(春・秋)', 1],
+    256: ['英語(春)', 2],
+    512: ['英語(春・秋)', 4],
+    1024: ['情報', 4],
+    2048: ['ファーストイヤーセミナー', 1],
+    4096: ['学問への誘い', 1]
 }
+
+common = [
+    ['ファーストイヤーセミナー', 1, 2048],
+    ['学問への誘い', 1, 4096],
+    ['情報リテラシー(講義)', 1, 1024],
+    ['情報リテラシー(演習)', 1, 1024],
+    ['データサイエンス', 2, 1024],
+    ['English Reading Skills I', 1, 256 | 512],
+    ['English Presentation Skills I', 1, 256 | 512],
+    ['English Reading Skills II', 1, 256],
+    ['English Presentation Skills II', 1, 256],
+    ['基礎体育(春)', 0.5, 128],
+    ['基礎体育(秋)', 0.5, 128]
+]
 
 def subject(row):
     id_, name, credit, semester, _, info = row
@@ -77,11 +80,9 @@ def subject(row):
 wb = load_workbook(path.join(dir_, 'kdb.xlsx'), read_only=True)
 try:
     ws = wb['開設科目一覧']
-    subjects.update(map(subject, ws.values))
+    subjects = dict(map(subject, ws.values))
 finally:
     wb.close()
-
-common = list(range(10, 21))
 
 with open(path.join(dir_, 'info.json'), encoding='utf-8') as f:
     data = json.load(f)
@@ -89,7 +90,7 @@ with open(path.join(dir_, 'info.json'), encoding='utf-8') as f:
 with open(path.join(dir_, 'table.json'), encoding='utf-8') as f:
     table = json.load(f)
 
-data.update(subjects=subjects, common=common, table=table)
+data.update(subjects=subjects, special=special, common=common, table=table)
 
 with open(path.join(dir_, 'data.json'), 'w', encoding='utf-8') as f:
     json.dump(data, f, ensure_ascii=False, separators=(',', ':'))

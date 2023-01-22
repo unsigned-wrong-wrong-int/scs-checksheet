@@ -19,17 +19,11 @@ const commonSubject = ([name, credit, flags]) =>
 
 export
 const SubjectDict = class {
-   constructor(common, all) {
+   constructor(common, all, special) {
       this.common = common.map(s => commonSubject(s));
-      this.all = new Map();
-      this.special = new Map();
-      for (const [id, s] of Object.entries(all)) {
-         if (id.length === 7) {
-            this.all.set(id, subject(s));
-         } else {
-            this.special.set(+id, {name: s[0], credit: s[1]});
-         }
-      }
+      this.all = new Map(Object.entries(all).map(([id, s]) => [id, subject(id, s)]));
+      this.special = new Map(Object.entries(special)
+         .map(([id, [name, credit]]) => [+id, {name, credit}]));
    }
 
    get(id) {
