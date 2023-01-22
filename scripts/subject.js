@@ -11,9 +11,39 @@ const SUBJ_ALL = 1,
       SUBJ_ENG_SPR_FALL = 512,
       SUBJ_INFO = 1024;
 
-export
 const subject = (id, [name, credit, flags, id_n = id]) =>
    ({id, name, credit, flags, id_n});
+
+const commonSubject = ([name, credit, flags]) =>
+   ({id: "", name, credit, flags, id_n: ""});
+
+export
+const SubjectDict = class {
+   constructor(common, all) {
+      this.common = common.map(s => commonSubject(s));
+      this.all = new Map();
+      this.special = new Map();
+      for (const [id, s] of Object.entries(all)) {
+         if (id.length === 7) {
+            this.all.set(id, subject(s));
+         } else {
+            this.special.set(+id, {name: s[0], credit: s[1]});
+         }
+      }
+   }
+
+   get(id) {
+      return this.all.get(id);
+   }
+
+   getSpecial(id) {
+      return this.special.get(id);
+   }
+
+   *common() {
+      yield* this.common;
+   }
+}
 
 export
 const STATE_FAIL = 0,
