@@ -43,5 +43,15 @@ const transform = (key, value) => {
    }
 };
 
+const cache = new Map();
+
 export
-const fromJSON = text => JSON.parse(text, transform);
+const fetchData = async year => {
+   year = Number(year);
+   if (cache.has(year)) {
+      return cache.get(year);
+   }
+   const data = JSON.parse(await (await fetch(`../data/${year}.json`)).text(), transform);
+   cache.set(year, data);
+   return data;
+};
