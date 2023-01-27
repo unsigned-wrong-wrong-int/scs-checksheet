@@ -194,9 +194,17 @@ const calc = (list, grade, rule, outer = null, unweighted = null) => {
    }
 };
 
+const toeicScore = (max, score) => {
+   if (score >= 800) {
+      return max;
+   }
+   const a = max === 200 ? 2000 : 1000, b = max === 50 ? 158 : 79;
+   return Math.ceil((score - 10) * a / b) / 100;
+};
+
 export
-const evaluate = ({list, testRule, calcRule}, {common, subjects}) => {
+const evaluate = ({list, testRule, calcRule, toeic: toeicMax}, {common, subjects, toeic}) => {
    const state = test(list, new GradeList(common, subjects), testRule);
    const [sum, items] = calc(list, new GradeList(common, subjects), calcRule);
-   return {state, sum, items};
+   return {state, sum, items, toeic: toeicScore(toeicMax, toeic)};
 };
