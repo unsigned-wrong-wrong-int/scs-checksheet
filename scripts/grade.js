@@ -3,7 +3,6 @@ const STATE_FAILED = 0,
       STATE_PENDING = 1,
       STATE_PASSED = 2;
 
-export
 const grade = (subject, isLastYear) =>
    ({subject, beforeFallC: isLastYear || !subject.isFallC, score: null, state: STATE_PENDING});
 
@@ -195,6 +194,9 @@ const calc = (list, grade, rule, outer = null, unweighted = null) => {
 };
 
 const toeicScore = (max, score) => {
+   if (score === null) {
+      return null;
+   }
    if (score >= 800) {
       return max;
    }
@@ -202,9 +204,28 @@ const toeicScore = (max, score) => {
    return Math.ceil((score - 10) * a / b) / 100;
 };
 
-export
 const evaluate = ({list, testRule, calcRule, toeic: toeicMax}, {common, subjects, toeic}) => {
    const state = test(list, new GradeList(common, subjects), testRule);
    const [sum, items] = calc(list, new GradeList(common, subjects), calcRule);
-   return {state, sum, items, toeic: toeicScore(toeicMax, toeic)};
+   const result = {state, sum, items};
+   if (toeicMax !== undefined) {
+      result.toeic = toeicScore(toeicMax, toeic);
+   }
+   return result;
+};
+
+export
+const GradeData = class {
+   constructor(year, data) {
+      this.year = year;
+      this.data = data;
+      this.common = data.common.map(s => grade(s, false));
+      this.subjects = [];
+      this.toeic = null;
+      this.partitions = [];
+   }
+
+   update() {
+      this.partitions = this.data.partitions.map(p => evaluate(p, this));
+   }
 };
