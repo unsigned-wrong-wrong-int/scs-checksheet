@@ -14,7 +14,7 @@ const GradeList = class {
    filter(id, pred) {
       if (typeof id === "number") {
          return this.data
-            .filter(v => v.beforeFallC && (v.subject.flags & id_n) === id_n && pred(v));
+            .filter(v => v.beforeFallC && (v.subject.flags & id) === id && pred(v));
       } else {
          return this.data.filter(v => v.subject.id_n === id && pred(v));
       }
@@ -83,7 +83,7 @@ const TestContext = class {
 };
 
 const test = (list, grade, rule, outer = null) => {
-   const ctx = rule.count ? new TestContext() : outer;
+   const ctx = (rule.count ? null : outer) ?? new TestContext();
    if (rule.spans) {
       for (const span of rule.spans) {
          test(list, grade, span, ctx);
@@ -95,10 +95,10 @@ const test = (list, grade, rule, outer = null) => {
    }
    if (rule.count) {
       ctx.limit(rule.count, rule.saturates);
-      if (outer === null) {
-         return ctx.result();
-      }
-      outer.merge(ctx);
+      outer?.merge(ctx);
+   }
+   if (outer === null) {
+      return ctx.result();
    }
 };
 
@@ -186,10 +186,10 @@ const calc = (list, grade, rule, outer = null, unweighted = null) => {
    }
    if (rule.count) {
       ctx.limit(rule.count, rule.saturates ? unweighted : outer);
-      if (outer === null) {
-         return ctx.result();
-      }
-      outer.merge(ctx);
+      outer?.merge(ctx);
+   }
+   if (outer === null) {
+      return ctx.result();
    }
 };
 
@@ -204,13 +204,15 @@ const toeicScore = (max, score) => {
    return Math.ceil((score - 10) * a / b) / 100;
 };
 
-const evaluate = ({list, testRule, calcRule, toeic: toeicMax}, {common, subjects, toeic}) => {
+const evaluate = (partition, {common, subjects, toeic}) => {
+   const {list, test: testRule, calc: calcRule, toeic: toeicMax} = partition;
    const state = test(list, new GradeList(common, subjects), testRule);
    const [sum, items] = calc(list, new GradeList(common, subjects), calcRule);
-   const result = {state, sum, items};
+   const result = {partition, state, sum, items};
    if (toeicMax !== undefined) {
       result.toeic = toeicScore(toeicMax, toeic);
    }
+   // console.log(result);
    return result;
 };
 
