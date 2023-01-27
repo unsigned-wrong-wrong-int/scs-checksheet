@@ -11,10 +11,10 @@ def normalize(id_):
             yield id_n
             break
 
-def attr(id_, is_intro, is_fall_c):
+def attr(id_, is_intro):
     f = 0
     for p in flags:
-        if is_intro and p[0] == 'intro' or is_fall_c and p[0] == 'fall_c' or re.match(p[0], id_):
+        if is_intro and p[0] == 'intro' or re.match(p[0], id_):
             f |= p[1]
     return f
 
@@ -22,7 +22,7 @@ def subject(row):
     id_, name, credit, semester, _, info = row
     is_intro = re.search(r'専門導入科目', info) is not None
     is_fall_c = re.search(r'秋(?:A?B?C|学期)|春季休業中|通年', semester) is not None
-    return (id_, [name, credit, attr(id_, is_intro, is_fall_c), *normalize(id_)])
+    return (id_, [name, credit, int(is_fall_c), attr(id_, is_intro), *normalize(id_)])
 
 src = path.join(path.dirname(__file__), sys.argv[1])
 dest = src + '.json'
