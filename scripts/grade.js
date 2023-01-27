@@ -1,37 +1,60 @@
-import {STATE_FAIL, STATE_CURR, STATE_PASS} from "./subject";
+export
+const STATE_FAILED = 0,
+      STATE_PENDING = 1,
+      STATE_PASSED = 2;
 
-const buildRule = data => {
-   let rule = {};
-   let i;
-   if (typeof data[0] === "number") {
-      rule.first = data[0];
-      rule.last = data[1];
-      i = 2;
-   } else {
-      rule.spans = [];
-      for (i = 0; i < data.length && typeof data[i] !== "number"; ++i) {
-         rule.spans.push(buildRule(data[i], proto));
+export
+const grade = (subject, isLastYear) =>
+   ({subject, beforeFallC: isLastYear || !subject.isFallC, score: null, state: STATE_PENDING});
+
+const GradeList = class {
+   constructor(common, subjects) {
+      this.data = common.concat(subjects);
+   }
+
+   filter(id, pred) {
+      if (typeof id === "number") {
+         return this.data
+            .filter(v => v.beforeFallC && (v.subject.flags & id_n) === id_n && pred(v));
+      } else {
+         return this.data.filter(v => v.subject.id_n === id && pred(v));
       }
    }
-   if (i < data.length) {
-      rule.count = Math.abs(data[i]);
-      rule.saturates = data[i] < 0;
-      if (++i < data.length) {
-         rule.weight = data[i];
+
+   groupById(list, field) {
+      const map = new Map();
+      for (const v of list) {
+         if (!map.has(v.subject.id_n) || map.get(v.subject.id_n)[field] < v[field]) {
+            map.set(v.subject.id_n, v);
+         }
       }
+      return map;
    }
-   return rule;
+
+   drop(map) {
+      const ids = [...map.keys()];
+      this.data = this.data.filter(v => !ids.includes(v.subject.id_n));
+      return [...map.values()];
+   }
+
+   getForTest(id) {
+      return this.drop(this.groupById(this.filter(id, v => v.state !== STATE_FAILED), "state"));
+   }
+
+   getForCalc(id) {
+      return this.drop(this.groupById(this.filter(id, v => v.score !== null), "score"));
+   }
 };
 
 const TestContext = class {
    constructor() {
       this.passed = 0;
       this.pending = 0;
-      this.state = STATE_PASS;
+      this.state = STATE_PASSED;
    }
 
    add(v) {
-      if (v.state === STATE_PASS) {
+      if (v.state === STATE_PASSED) {
          this.passed += v.subject.credit;
       } else {
          this.pending += v.subject.credit;
@@ -45,7 +68,7 @@ const TestContext = class {
       }
       if (this.passed < count) {
          this.state = this.passed + this.pending >= count
-            ? Math.min(this.state, STATE_CURR) : STATE_FAIL;
+            ? Math.min(this.state, STATE_PENDING) : STATE_FAILED;
       }
    }
 
@@ -67,10 +90,8 @@ const test = (list, grade, rule, outer = null) => {
          test(list, grade, span, ctx);
       }
    } else {
-      for (const id of list.slice(rule.first, rule.last + 1)) {
-         for (const v of grade.getForTest(id)) {
-            ctx.add(v);
-         }
+      for (const v of list.slice(rule.first, rule.last + 1).flatMap(id => grade.getForTest(id))) {
+         ctx.add(v);
       }
    }
    if (rule.count) {
@@ -160,10 +181,8 @@ const calc = (list, grade, rule, outer = null, unweighted = null) => {
          calc(list, grade, span, ctx, unweighted ?? ctx);
       }
    } else {
-      for (const id of list.slice(rule.first, rule.last + 1)) {
-         for (const v of grade.getForCalc(id)) {
-            ctx.add(v);
-         }
+      for (const v of list.slice(rule.first, rule.last + 1).flatMap(id => grade.getForCalc(id))) {
+         ctx.add(v);
       }
    }
    if (rule.count) {
@@ -175,5 +194,9 @@ const calc = (list, grade, rule, outer = null, unweighted = null) => {
    }
 };
 
-const partition = ({name, list, test, calc}) =>
-   ({name, list, testRule: buildRule(test), calcRule: buildRule(calc)});
+export
+const evaluate = ({list, testRule, calcRule}, {common, subjects}) => {
+   const state = test(list, new GradeList(common, subjects), testRule);
+   const [sum, items] = calc(list, new GradeList(common, subjects), calcRule);
+   return {state, sum, items};
+};
