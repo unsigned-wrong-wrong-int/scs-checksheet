@@ -6,213 +6,215 @@ const STATE_FAILED = 0,
 const grade = (subject, isLastYear) =>
    ({subject, beforeFallC: isLastYear || !subject.isFallC, score: null, state: STATE_PENDING});
 
-const GradeList = class {
-   constructor(common, subjects) {
-      this.data = common.concat(subjects);
+const stateComp = (x, y) => {
+   return Math.sign(x.state - y.state);
+};
+
+const scoreComp = (x, y) => {
+   if (x.score === null) {
+      return y.score === null ? 0 : -1;
+   }
+   return y.score === null ? 1 : Math.sign(x.score - y.score);
+};
+
+const SubjectGrade = class {
+   constructor(item) {
+      this.bestState = item;
+      this.bestScore = item;
    }
 
-   filter(id, pred) {
-      if (typeof id === "number") {
-         return this.data
-            .filter(v => v.beforeFallC && (v.subject.flags & id) === id && pred(v));
-      } else {
-         return this.data.filter(v => v.subject.id_n === id && pred(v));
+   update(item) {
+      if (stateComp(item, this.bestState) > 0) {
+         this.bestState = item;
       }
-   }
-
-   groupById(list, field) {
-      const map = new Map();
-      for (const v of list) {
-         if (!map.has(v.subject.id_n) || map.get(v.subject.id_n)[field] < v[field]) {
-            map.set(v.subject.id_n, v);
-         }
+      if (scoreComp(item, this.bestScore) > 0) {
+         this.bestScore = item;
       }
-      return map;
-   }
-
-   drop(map) {
-      const ids = [...map.keys()];
-      this.data = this.data.filter(v => !ids.includes(v.subject.id_n));
-      return [...map.values()];
-   }
-
-   getForTest(id) {
-      return this.drop(this.groupById(this.filter(id, v => v.state !== STATE_FAILED), "state"));
-   }
-
-   getForCalc(id) {
-      return this.drop(this.groupById(this.filter(id, v => v.score !== null), "score"));
    }
 };
 
-const TestContext = class {
-   constructor() {
-      this.passed = 0;
-      this.pending = 0;
+const collect = (common, subjects) => {
+   const map = new Map(common.map(item => [item.subject.id, new SubjectGrade(item)]));
+   for (const item of subjects) {
+      const id = item.subject.id;
+      if (map.has(id)) {
+         map.get(id).update(item);
+      } else {
+         map.set(id, new SubjectGrade(item));
+      }
+   }
+   const forTest = [], forCalc = [];
+   for (const {bestState, bestScore} of map.values()) {
+      if (bestState.state !== STATE_FAILED) {
+         forTest.push(bestState);
+      }
+      if (bestScore.score !== null) {
+         forCalc.push(bestScore);
+      }
+   }
+   return [forTest, forCalc];
+};
+
+const GradeView = class {
+   constructor(list) {
+      this.list = list.slice();
+   }
+
+   take(id, noFallC) {
+      const matches = typeof id === "number"
+         ? noFallC
+            ? item => !item.isFallC && (item.subject.flags & id) === id
+            : item => (item.subject.flags & id) === id
+         : item => item.subject.id_n === id;
+      const match = [], rest = [];
+      for (const item of this.list) {
+         (matches(item) ? match : rest).push(item);
+      }
+      this.list = rest;
+      return match;
+   }
+
+   scanCredits(idList) {
+      return idList.map(id =>
+         this.take(id, false).reduce((a, item) => {
+            a[item.state === STATE_PASSED ? 0 : 1] += item.subject.credit;
+            return a;
+         }, [0, 0])
+      );
+   }
+
+   scanScores(idList) {
+      return idList.map(id =>
+         this.take(id, true).reduce((a, item) => {
+            a.push(item);
+            return a;
+         }, [])
+      );
+   }
+};
+
+const Test = class {
+   constructor(list, rule, [states, ]) {
+      this.credits = new GradeView(states).scanCredits(list);
+      this.rule = rule;
       this.state = STATE_PASSED;
    }
 
-   add(v) {
-      if (v.state === STATE_PASSED) {
-         this.passed += v.subject.credit;
-      } else {
-         this.pending += v.subject.credit;
-      }
+   failed() {
+      this.state = STATE_FAILED;
    }
 
-   limit(count, saturates) {
-      if (saturates) {
-         this.passed = Math.min(this.passed, count);
-         this.pending = Math.min(this.pending, count - this.passed);
-      }
-      if (this.passed < count) {
-         this.state = this.passed + this.pending >= count
-            ? Math.min(this.state, STATE_PENDING) : STATE_FAILED;
-      }
+   pending() {
+      this.state = Math.min(this.state, STATE_PENDING);
    }
 
-   merge(other) {
-      this.passed += other.passed;
-      this.pending += other.pending;
-      this.state = Math.min(this.state, other.state);
-   }
-
-   result() {
-      return this.state;
-   }
-};
-
-const test = (list, grade, rule, outer = null) => {
-   const ctx = (rule.count ? null : outer) ?? new TestContext();
-   if (rule.spans) {
-      for (const span of rule.spans) {
-         test(list, grade, span, ctx);
-      }
-   } else {
-      for (const v of list.slice(rule.first, rule.last + 1).flatMap(id => grade.getForTest(id))) {
-         ctx.add(v);
-      }
-   }
-   if (rule.count) {
-      ctx.limit(rule.count, rule.saturates);
-      outer?.merge(ctx);
-   }
-   if (outer === null) {
-      return ctx.result();
-   }
-};
-
-const CalcContext = class {
-   constructor(weight) {
-      this.data = [];
-      this.weight = weight;
-      this.half = null;
-   }
-
-   add(v, credit = v.subject.credit, weight = this.weight) {
-      if (!Number.isInteger(credit)) {
-         credit = Math.trunc(credit);
-         this.addHalf(v);
-      }
-      this.addFixed(v, credit, weight);
-   }
-
-   addHalf(v) {
-      if (this.half) {
-         const u = this.half;
-         this.half = null;
-         const pair = [u, v];
-         pair.score = u.score + v.score;
-         this.addFixed(pair, 1.0, this.weight);
-      } else {
-         this.half = v;
-      }
-   }
-
-   addFixed(v, credit, weight) {
-      const i = this.data.findIndex(x => x[2] < weight || x[2] === weight && x[0].score < v.score);
-      this.data.splice(i === -1 ? this.data.length : i, 0, [v, credit, weight]);
-   }
-
-   limit(count, rest) {
-      let credit = 0;
-      for (let i = 0; i < this.data.length; ++i) {
-         const [v, c, w] = this.data[i];
-         if (credit + c >= count) {
-            this.data[i] = [v, count - credit, w];
-            if (credit + c > count) {
-               rest?.addFixed(v, c + credit - count, rest.weight)
-            }
-            for (const [v, c, ] of this.data.splice(i + 1)) {
-               rest?.addFixed(v, c, rest.weight);
-            }
-            if (this.half) {
-               rest?.addHalf(this.half);
-               this.half = null;
-            }
-            return;
+   runSpan(rule) {
+      const credits = rule.spans?.map(span => this.runSpan(span))
+         ?? this.credits.slice(rule.first, rule.last + 1);
+      let [passed, pending] = credits.reduce((a, b) => [a[0] + b[0], a[1] + b[1]], [0, 0]);
+      if (rule.count) {
+         if (rule.saturates) {
+            passed = Math.min(passed, rule.count);
+            pending = Math.min(pending, rule.count - passed);
          }
-         credit += c;
+         if (passed < rule.count) {
+            passed + pending < rule.count ? this.failed() : this.pending();
+         }
       }
-      if (this.half) {
-         this.addFixed(this.half, 0.5, this.weight);
-         this.half = null;
-      }
+      return [passed, pending];
    }
 
-   merge(other) {
-      for (const [v, c, w] of other.data) {
-         this.addFixed(v, c, w);
-      }
-   }
-
-   result() {
-      const sum = this.data
-         .reduce((s, [v, c, w]) => s + Math.round(100 * w * c * v.score), 0) / 100;
-      return [sum, this.data];
+   run() {
+      this.runSpan(this.rule);
+      return {state: this.state, credits: this.credits};
    }
 };
 
-const calc = (list, grade, rule, outer = null, unweighted = null) => {
-   const ctx = rule.count ? new CalcContext(rule.weight ?? outer.weight) : outer;
-   if (rule.spans) {
-      for (const span of rule.spans) {
-         calc(list, grade, span, ctx, unweighted ?? ctx);
+const Buffer = class {
+   constructor(weight, outer) {
+      this.items = [];
+      this.defaultWeight = weight ?? outer?.defaultWeight;
+      this.outer = outer;
+   }
+
+   add(item, credit, weight = this.defaultWeight) {
+      if (credit === 0 || weight === 0) {
+         return;
       }
-   } else {
-      for (const v of list.slice(rule.first, rule.last + 1).flatMap(id => grade.getForCalc(id))) {
-         ctx.add(v);
+      this.items.push([item, credit, weight]);
+   }
+
+   flush(count, rest) {
+      this.items.sort((x, y) => x[2] === y[2] ? y[0].score - x[0].score : y[0] - x[0]);
+      let i = 0;
+      for (let n = 0; i < this.items.length; ++i) {
+         const [item, credit, weight] = this.items[i];
+         if (n + credit >= count) {
+            this.outer.add(item, count - n, weight);
+            rest.add(item, n + credit - count);
+            break;
+         }
+         this.outer.add(item, credit, weight);
+         n += credit;
+      }
+      for (; i < this.items.length; ++i) {
+         const [item, credit, ] = this.items[i];
+         rest.add(item, credit);
       }
    }
-   if (rule.count) {
-      ctx.limit(rule.count, rule.saturates ? unweighted : outer);
-      outer?.merge(ctx);
+};
+
+const Calc = class {
+   constructor(list, rule, [, scores]) {
+      this.rule = rule;
+      this.subjects = new GradeView(scores).scanScores(list);
+      this.all = new Buffer(0);
    }
-   if (outer === null) {
-      return ctx.result();
+
+   runSpan(rule, outer) {
+      const buf = rule.count ? new Buffer(rule.weight, outer) : outer;
+      if (rule.spans) {
+         rule.spans.forEach(span => this.runSpan(span, buf));
+      } else {
+         this.subjects.slice(rule.first, rule.last + 1).flat()
+            .forEach(item => buf.add(item, item.subject.credit));
+      }
+      if (rule.count) {
+         buf.flush(rule.count, rule.saturates ? this.all : outer);
+      }
+   }
+
+   run() {
+      this.runSpan(this.rule, this.all);
+      const items = this.all.items;
+      const sum = items.reduce((n, [{score}, credit, weight]) => n + score * credit * weight, 0);
+      return {sum, items};
    }
 };
 
 const toeicScore = (max, score) => {
+   if (max === undefined) {
+      return {};
+   }
+   let result;
    if (score === null) {
-      return null;
+      result = null;
+   } else if (score >= 800) {
+      result = max;
+   } else {
+      result = Math.ceil((score - 10) * max * 10 / 79) / 100;
    }
-   if (score >= 800) {
-      return max;
-   }
-   const a = max === 200 ? 2000 : 1000, b = max === 50 ? 158 : 79;
-   return Math.ceil((score - 10) * a / b) / 100;
+   return {toeic: result};
 };
 
-const evaluate = (partition, {common, subjects, toeic}) => {
-   const {list, test: testRule, calc: calcRule, toeic: toeicMax} = partition;
-   const state = test(list, new GradeList(common, subjects), testRule);
-   const [sum, items] = calc(list, new GradeList(common, subjects), calcRule);
-   const result = {partition, state, sum, items};
-   if (toeicMax !== undefined) {
-      result.toeic = toeicScore(toeicMax, toeic);
-   }
-   // console.log(result);
+const evaluate = (partition, grades, toeic) => {
+   const result = {partition};
+   const testResult = new Test(partition.list, partition.test, grades).run();
+   const calcResult = new Calc(partition.list, partition.calc, grades).run();
+   const toeicResult = toeicScore(partition.toeic, toeic);
+   Object.assign(result, testResult);
+   Object.assign(result, calcResult);
+   Object.assign(result, toeicResult);
    return result;
 };
 
@@ -228,6 +230,7 @@ const GradeData = class {
    }
 
    update() {
-      this.partitions = this.data.partitions.map(p => evaluate(p, this));
+      const grades = collect(this.common, this.subjects);
+      this.partitions = this.data.partitions.map(p => evaluate(p, grades, this.toeic));
    }
 };
