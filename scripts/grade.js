@@ -188,7 +188,7 @@ const Calc = class {
       this.runSpan(this.rule, this.all);
       const items = this.all.items;
       const sum = items.reduce((n, [{score}, credit, weight]) => n + score * credit * weight, 0);
-      return {sum, items};
+      return {score: sum, items};
    }
 };
 
@@ -198,7 +198,7 @@ const toeicScore = (max, score) => {
    }
    let result;
    if (score === null) {
-      result = null;
+      result = 0;
    } else if (score >= 800) {
       result = max;
    } else {
