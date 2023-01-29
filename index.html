@@ -14,6 +14,9 @@
          th, td {
             border: solid 1px;
          }
+         input, button, select {
+            font: inherit;
+         }
       </style>
    </head>
    <body>
@@ -21,37 +24,14 @@
          <table>
             <thead>
                <tr>
-                  <th>科目名</th>
-                  <th>単位</th>
-                  <th>履修状況</th>
-               </tr>
-            </thead>
-            <tbody id="common-subjects">
-            </tbody>
-         </table>
-         <table>
-            <thead>
-               <tr>
                   <th>科目番号</th>
                   <th>科目名</th>
                   <th>単位</th>
-                  <th>評点</th>
+                  <th>成績</th>
                   <th></th>
                </tr>
             </thead>
-            <tbody id="other-subjects">
-            </tbody>
-         </table>
-         <table>
-            <thead>
-               <tr>
-                  <th>TOEIC</th>
-               </tr>
-            </thead>
-            <tbody>
-               <tr>
-                  <td><input id="toeic-score" type="number" min="5" max="990" step="5"></td>
-               </tr>
+            <tbody id="subjects">
             </tbody>
          </table>
       </div>
@@ -63,6 +43,7 @@
                   <th>応募要件</th>
                   <th>成績点</th>
                   <th>TOEIC</th>
+                  <th>計</th>
                </tr>
             </thead>
             <tbody id="partitions">
@@ -88,7 +69,7 @@
                   <th>合計</th>
                </tr>
             </thead>
-            <tbody id="specified-subjects">
+            <tbody id="specified">
             </tbody>
          </table>
          <table>
@@ -102,7 +83,7 @@
                   <th>成績点</th>
                </tr>
             </thead>
-            <tbody id="score-details">
+            <tbody id="details">
             </tbody>
          </table>
       </div>

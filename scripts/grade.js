@@ -3,6 +3,7 @@ const STATE_FAILED = 0,
       STATE_PENDING = 1,
       STATE_PASSED = 2;
 
+export
 const grade = (subject, isLastYear) =>
    ({subject, beforeFallC: isLastYear || !subject.isFallC, score: null, state: STATE_PENDING});
 
@@ -211,7 +212,7 @@ const evaluate = (partition, grades, toeic) => {
    const result = {partition};
    const testResult = new Test(partition.list, partition.test, grades).run();
    const calcResult = new Calc(partition.list, partition.calc, grades).run();
-   const toeicResult = toeicScore(partition.toeic, toeic);
+   const toeicResult = toeicScore(partition.toeic, toeic.score);
    Object.assign(result, testResult);
    Object.assign(result, calcResult);
    Object.assign(result, toeicResult);
@@ -225,7 +226,7 @@ const GradeData = class {
       this.data = data;
       this.common = data.common.map(s => grade(s, false));
       this.subjects = [];
-      this.toeic = null;
+      this.toeic = {score: null};
       this.partitions = [];
    }
 
