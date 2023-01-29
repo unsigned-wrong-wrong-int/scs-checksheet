@@ -241,6 +241,121 @@ const PartitionRecord = class {
    }
 };
 
+const testRuleCell = (rule, colSpan) => {
+   const td = document.createElement("td");
+   td.rowSpan = rule.last - rule.first + 1;
+   td.colSpan = colSpan;
+   if (rule.count) {
+      td.innerText = `${rule.count}単位${rule.saturates ? "\nまで" : ""}`;
+      if (rule.span && colSpan === 1) {
+         td.classList.add("test-nested");
+      }
+   } else {
+      td.classList.add("test-blank");
+   }
+   return td;
+};
+
+const weightCell = (rule, weight) => {
+   const td = document.createElement("td");
+   td.rowSpan = rule.last - rule.first + 1;
+   td.innerText = weight.toFixed(2);
+   return td;
+};
+
+const calcRuleCell = (rule, colSpan) => {
+   const td = document.createElement("td");
+   td.rowSpan = rule.last - rule.first + 1;
+   td.colSpan = colSpan;
+   if (rule.count) {
+      td.innerText = `${rule.count}単位`;
+      if (rule.span && colSpan === 1) {
+         td.classList.add("calc-nested");
+      }
+   } else {
+      td.classList.add("calc-blank");
+   }
+   return td;
+};
+
+const blankCell = (rowSpan, colSpan) => {
+   const td = document.createElement("td");
+   td.rowSpan = rowSpan;
+   td.colSpan = colSpan;
+   td.classList.add("blank");
+   return td;
+};
+
+const textCell = text => {
+   const td = document.createElement("td");
+   td.innerText = text;
+   return td;
+};
+
+const testCols = (rows, rule) => {
+   if (0 < rule.first) {
+      rows[0].push(blankCell(rule.first, 2));
+   }
+   for (const span of rule.spans) {
+      if (span.spans) {
+         rows[span.first].push(testRuleCell(span, 1));
+         for (const sub of span.spans) {
+            rows[sub.first].push(testRuleCell(sub, 1));
+         }
+      } else {
+         rows[span.first].push(testRuleCell(span, 2));
+      }
+   }
+   if (rule.last + 1 < rows.length) {
+      rows[rule.last + 1].push(blankCell(rows.length - rule.last - 1, 2));
+   }
+};
+
+const subjectCols = (rows, credits, subjects) => {
+   for (let i = 0; i < rows.length; ++i) {
+      const row = rows[i];
+      row.push(textCell(credits[i][0]), textCell(credits[i][1]));
+      const subject = subjects[i];
+      row.push(textCell(subject.id ?? "―"), textCell(subject.name));
+   }
+};
+
+const calcCols = (rows, rule) => {
+   if (0 < rule.first) {
+      rows[0].push(blankCell(rule.first, 1), blankCell(rule.first, 3));
+   }
+   if (rule.spans) {
+      for (const span of rule.spans) {
+         if (span.spans) {
+            for (const sub of sub.spans) {
+               rows[sub.first].push(weightCell(sub, sub.weight ?? span.weight),
+                  calcRuleCell(sub, 1));
+            }
+            rows[span.first].push(calcRuleCell(span, 1));
+         } else {
+            rows[span.first].push(weightCell(span, span.weight ?? rule.weight),
+               calcRuleCell(span, 2));
+         }
+      }
+      rows[rule.first].push(calcRuleCell(span, 1));
+   } else {
+      rows[rule.first].push(weightCell(rule, rule.weight), calcRuleCell(span, 3));
+   }
+   if (rule.last + 1 < rows.length) {
+      rows[rule.last + 1].push(blankCell(rows.length - rule.last - 1, 1),
+         blankCell(rows.length - rule.last - 1, 3));
+   }
+};
+
+const makeTable = (result, data) => {
+   const subjects = result.partition.list.map(id =>
+      (typeof id === "number" ? data.special : data.subjects).get(id));
+   const rows = result.partition.list.map(() => []);
+   testCols(rows, result.partition.test);
+   subjectCols(rows, result.credits, subjects);
+   calcCols(rows, result.partition.calc);
+};
+
 const UI = class {
    constructor() {
       this.subjects = document.getElementById("subjects");
@@ -263,6 +378,13 @@ const UI = class {
       this.subjects.replaceChildren(...this.subjectsUI.map(({element}) => element));
       this.partitions.replaceChildren(...this.partitionsUI.map(({element}) => element));
    }
+
+   update() {
+      this.grade.update();
+      for (let i = 0; i < this.grade.partitions.length; ++i) {
+         this.partitionsUI[i].update(this.grade.partitions[i]);
+      }
+   }
 };
 
 const main = async () => {
@@ -271,6 +393,7 @@ const main = async () => {
    let grade = new GradeData(2022, data);
    grade.update();
    ui.bind(grade);
+   document.getElementById("update").addEventListener("click", () => ui.update());
 };
 
 main();
