@@ -16,8 +16,8 @@ const buildRule = data => {
       for (i = 0; i < data.length && typeof data[i] !== "number"; ++i) {
          rule.spans.push(buildRule(data[i]));
       }
-      rule.first = rule.at(0).first;
-      rule.last = rule.at(-1).last;
+      rule.first = rule.spans.at(0)?.first;
+      rule.last = rule.spans.at(-1)?.last;
    }
    if (i < data.length) {
       rule.count = Math.abs(data[i]);
