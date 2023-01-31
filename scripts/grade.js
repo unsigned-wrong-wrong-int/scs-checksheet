@@ -1,3 +1,5 @@
+import { fetchData } from "./data";
+
 export
 const STATE_FAILED = 0,
       STATE_PENDING = 1,
@@ -217,17 +219,48 @@ const evaluate = (partition, grades, toeic) => {
 
 export
 const GradeData = class {
-   constructor(year, data) {
+   constructor(year, data, common, subjects, toeic) {
       this.year = year;
       this.data = data;
-      this.common = data.common.map(s => grade(s, false));
-      this.subjects = [];
-      this.toeic = {score: null};
-      this.partitions = [];
+      this.common = common;
+      this.subjects = subjects;
+      this.toeic = toeic;
+      this.update();
    }
 
    update() {
       const grades = collect(this.common, this.subjects);
       this.partitions = this.data.partitions.map(p => evaluate(p, grades, this.toeic));
+   }
+
+   static async create(year) {
+      const data = await fetchData(year);
+      const common = data.common.map(s => grade(s, false));
+      return new GradeData(year, data, common, [], {score: null});
+   }
+
+   toJSON() {
+      return {
+         year: this.year,
+         common: this.common.map(({state}) => state),
+         subjects: this.subjects.map(
+            ({subject: {id, isLastYear}, score}) => [id, +isLastYear, score]),
+         toeic: this.toeic.score,
+      };
+   }
+
+   static async fromJSON(json) {
+      const data = await fetchData(json.year);
+      const common = json.common.map((state, i) => {
+         const g = grade(data.common[i], false);
+         g.state = state;
+         return g;
+      });
+      const subjects = json.subjects.map(([id, isLastYear, score]) => {
+         const g = grade(data.subjects.get(id), Boolean(isLastYear));
+         g.score = score;
+         return g;
+      });
+      return new GradeData(json.year, data, common, subjects, {score: json.toeic});
    }
 };

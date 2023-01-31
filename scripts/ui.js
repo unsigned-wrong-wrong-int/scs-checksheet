@@ -1,4 +1,4 @@
-import { fetchData } from "./data.js";
+import { } from "./data.js";
 import { STATE_FAILED, STATE_PASSED, STATE_PENDING, GradeData, grade } from "./grade.js";
 
 const Row = class {
@@ -442,11 +442,8 @@ const UI = class {
 
 const main = async () => {
    let ui = new UI();
-   let data = await fetchData(2022);
-   let grade = new GradeData(2022, data);
-   grade.update();
+   let grade = await GradeData.create(2022);
    ui.bind(grade);
-   document.getElementById("update").addEventListener("click", () => ui.update());
 };
 
 main();
