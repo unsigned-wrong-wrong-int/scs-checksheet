@@ -151,6 +151,7 @@ const Buffer = class {
          if (n + credit >= count) {
             this.outer.add(item, count - n, weight);
             rest.add(item, n + credit - count);
+            ++i;
             break;
          }
          this.outer.add(item, credit, weight);
