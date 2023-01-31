@@ -14,7 +14,7 @@ const Row = class {
    }
 };
 
-const selectElement = map => {
+const selectElement = (map, action) => {
    const element = document.createElement("select");
    for (const [value, text] of map) {
       const option = document.createElement("option");
@@ -22,6 +22,7 @@ const selectElement = map => {
       option.innerText = text;
       element.appendChild(option);
    }
+   element.addEventListener("change", action);
    return element;
 };
 
@@ -34,19 +35,21 @@ const scoreInput = (min = 0, max = 100, step = 1) => {
    return element;
 };
 
-const buttonElement = text => {
+const buttonElement = (text, action) => {
    const element = document.createElement("button");
    element.innerText = text;
+   element.addEventListener("click", action);
    return element;
 }
 
 const newLine = () => document.createElement("br");
 
-const idInput = () => {
+const idInput = action => {
    const element = document.createElement("input");
    element.type = "text";
    element.pattern = "[\\dA-Z]{3}\\d{4}";
    element.placeholder = "科目番号";
+   element.addEventListener("input", action);
    return element;
 };
 
@@ -75,17 +78,15 @@ const CommonRecord = class {
       row.addCell("―");
       row.addCell(data.subject.name);
       row.addCell(data.subject.credit);
-      const state = selectElement(stateMap);
-      state.value = data.state;
-      state.addEventListener("change", () => this.change());
-      row.addCell(state);
-      this.state = state;
+      this.stateSelect = selectElement(stateMap, () => this.change());
+      this.stateSelect.value = data.state;
+      row.addCell(this.stateSelect);
       row.addCell();
       this.element = row.element;
    }
 
    change() {
-      this.data.state = +this.state.value;
+      this.data.state = +this.stateSelect.value;
    }
 };
 
@@ -96,17 +97,12 @@ const ToeicRecord = class {
       row.addCell("―");
       row.addCell("TOEIC-IP スコア");
       row.addCell("―");
-      const scoreEdit = scoreInput(5, 990, 5);
-      scoreEdit.value = data.score ?? "";
-      this.scoreEdit = scoreEdit;
+      this.scoreEdit = scoreInput(5, 990, 5);
+      this.scoreEdit.value = data.score ?? "";
       this.scoreCell = row.addCell(data.score ?? "");
-      const editButton = buttonElement("編集");
-      editButton.addEventListener("click", () => this.beginEdit());
-      this.editButton = editButton;
-      const applyButton = buttonElement("更新");
-      applyButton.addEventListener("click", () => this.endEdit());
-      this.applyButton = applyButton;
-      this.buttonCell = row.addCell(editButton);
+      this.editButton = buttonElement("編集", () => this.beginEdit());
+      this.applyButton = buttonElement("更新", () => this.endEdit());
+      this.buttonCell = row.addCell(this.editButton);
       this.element = row.element;
    }
 
@@ -135,27 +131,18 @@ const SubjectRecord = class {
       this.data = data;
       this.list = list;
       const row = new Row;
-      const lastYearCheck = checkBox();
-      this.lastYearCheck = lastYearCheck;
-      const lastYearLabel = labeled(lastYearCheck, "前年度分");
-      this.lastYearLabel = lastYearLabel;
+      this.lastYearCheck = checkBox();
+      this.lastYearLabel = labeled(this.lastYearCheck, "前年度分");
       this.idCell = row.addCell(data.subject.id);
       row.addCell(data.subject.name);
       row.addCell(data.subject.credit);
-      const scoreEdit = scoreInput();
-      scoreEdit.value = data.score ?? "";
-      this.scoreEdit = scoreEdit;
+      this.scoreEdit = scoreInput();
+      this.scoreEdit.value = data.score ?? "";
       this.scoreCell = row.addCell(data.score ?? "");
-      const editButton = buttonElement("編集");
-      editButton.addEventListener("click", () => this.beginEdit());
-      this.editButton = editButton;
-      const applyButton = buttonElement("更新");
-      applyButton.addEventListener("click", () => this.endEdit());
-      this.applyButton = applyButton;
-      const deleteButton = buttonElement("削除");
-      deleteButton.addEventListener("click", () => this.delete());
-      this.deleteButton = deleteButton;
-      this.buttonCell = row.addCell(editButton);
+      this.editButton = buttonElement("編集", () => this.beginEdit());
+      this.applyButton = buttonElement("更新", () => this.endEdit());
+      this.deleteButton = buttonElement("削除", () => this.delete());
+      this.buttonCell = row.addCell(this.editButton);
       this.element = row.element;
    }
 
@@ -195,19 +182,14 @@ const NewSubjectRecord = class {
       this.list = list;
       this.subject = null;
       const row = new Row;
-      const idEdit = idInput();
-      idEdit.addEventListener("input", () => this.findSubject());
-      this.idEdit = idEdit;
-      const lastYearCheck = checkBox();
-      this.lastYearCheck = lastYearCheck;
-      row.addCell(idEdit, labeled(lastYearCheck, "前年度分"));
+      this.idEdit = idInput(() => this.findSubject());
+      this.lastYearCheck = checkBox();
+      row.addCell(idEdit, labeled(this.lastYearCheck, "前年度分"));
       this.nameCell = row.addCell();
       this.creditCell = row.addCell();
-      const scoreEdit = scoreInput();
-      this.scoreEdit = scoreEdit;
-      row.addCell(scoreEdit);
-      const appendButton = buttonElement("追加");
-      appendButton.addEventListener("click", () => this.append());
+      this.scoreEdit = scoreInput();
+      row.addCell(this.scoreEdit);
+      const appendButton = buttonElement("追加", () => this.append());
       row.addCell(appendButton);
       this.element = row.element;
    }
