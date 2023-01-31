@@ -77,14 +77,14 @@ const CommonRecord = class {
       row.addCell(data.subject.credit);
       const state = selectElement(stateMap);
       state.value = data.state;
-      state.addEventListener("change", () => this.onChange());
+      state.addEventListener("change", () => this.change());
       row.addCell(state);
       this.state = state;
       row.addCell();
       this.element = row.element;
    }
 
-   onChange() {
+   change() {
       this.data.state = +this.state.value;
    }
 };
@@ -96,26 +96,37 @@ const ToeicRecord = class {
       row.addCell("―");
       row.addCell("TOEIC-IP スコア");
       row.addCell("―");
-      const score = scoreInput(5, 990, 5);
-      if (data.toeic !== null) {
-         score.value = data.toeic;
-      }
-      score.addEventListener("change", () => this.onChange());
-      row.addCell(score);
-      this.score = score;
-      row.addCell();
+      const scoreEdit = scoreInput(5, 990, 5);
+      scoreEdit.value = data.score ?? "";
+      this.scoreEdit = scoreEdit;
+      this.scoreCell = row.addCell(data.score ?? "");
+      const editButton = buttonElement("編集");
+      editButton.addEventListener("click", () => this.beginEdit());
+      this.editButton = editButton;
+      const applyButton = buttonElement("更新");
+      applyButton.addEventListener("click", () => this.endEdit());
+      this.applyButton = applyButton;
+      this.buttonCell = row.addCell(editButton);
       this.element = row.element;
    }
 
-   onChange() {
-      if (!this.score.willValidate) {
+   beginEdit() {
+      this.scoreCell.replaceChildren(this.scoreEdit);
+      this.buttonCell.replaceChildren(this.applyButton);
+   }
+
+   endEdit() {
+      if (!this.scoreEdit.checkValidity()) {
          return;
       }
-      if (this.score.value === "") {
+      const value = this.scoreEdit.value;
+      if (value === "") {
          this.data.score = null;
       } else {
-         this.data.score = +this.score.value;
+         this.data.score = +value;
       }
+      this.scoreCell.replaceChildren(value);
+      this.buttonCell.replaceChildren(this.editButton);
    }
 };
 
@@ -124,34 +135,52 @@ const SubjectRecord = class {
       this.data = data;
       this.list = list;
       const row = new Row;
-      row.addCell(data.subject.id);
+      const lastYearCheck = checkBox();
+      this.lastYearCheck = lastYearCheck;
+      const lastYearLabel = labeled(lastYearCheck, "前年度分");
+      this.lastYearLabel = lastYearLabel;
+      this.idCell = row.addCell(data.subject.id);
       row.addCell(data.subject.name);
       row.addCell(data.subject.credit);
-      const score = scoreInput();
-      if (data.score !== null) {
-         score.value = data.score;
-      }
-      score.addEventListener("change", () => this.onChange());
-      row.addCell(score);
-      this.score = score;
-      const button = buttonElement("削除");
-      button.addEventListener("click", () => this.delete());
-      row.addCell(button);
+      const scoreEdit = scoreInput();
+      scoreEdit.value = data.score ?? "";
+      this.scoreEdit = scoreEdit;
+      this.scoreCell = row.addCell(data.score ?? "");
+      const editButton = buttonElement("編集");
+      editButton.addEventListener("click", () => this.beginEdit());
+      this.editButton = editButton;
+      const applyButton = buttonElement("更新");
+      applyButton.addEventListener("click", () => this.endEdit());
+      this.applyButton = applyButton;
+      const deleteButton = buttonElement("削除");
+      deleteButton.addEventListener("click", () => this.delete());
+      this.deleteButton = deleteButton;
+      this.buttonCell = row.addCell(editButton);
       this.element = row.element;
    }
 
-   onChange() {
-      if (!this.score.willValidate) {
+   beginEdit() {
+      this.idCell.appendChild(this.lastYearLabel);
+      this.scoreCell.replaceChildren(this.scoreEdit);
+      this.buttonCell.replaceChildren(this.applyButton, this.deleteButton);
+   }
+
+   endEdit() {
+      if (!this.scoreEdit.checkValidity()) {
          return;
       }
-      if (this.score.value === "") {
+      this.data.isLastYear = this.lastYearCheck.checked;
+      const value = this.scoreEdit.value;
+      if (value === "") {
          this.data.state = STATE_PENDING;
          this.data.score = null;
       } else {
-         const value = +this.score.value;
-         this.data.state = value >= 60 ? STATE_PASSED : STATE_FAILED;
-         this.data.score = value;
+         this.data.state = +value >= 60 ? STATE_PASSED : STATE_FAILED;
+         this.data.score = +value;
       }
+      this.idCell.removeChild(this.lastYearLabel);
+      this.scoreCell.replaceChildren(value);
+      this.buttonCell.replaceChildren(this.editButton);
    }
 
    delete() {
@@ -160,52 +189,63 @@ const SubjectRecord = class {
    }
 };
 
-const EditSubjectRecord = class {
+const NewSubjectRecord = class {
    constructor(dict, list) {
       this.dict = dict;
       this.list = list;
       this.subject = null;
       const row = new Row;
-      const id = idInput();
-      id.addEventListener("input", () => this.findSubject());
-      const isLastYear = checkBox();
-      row.addCell(id, newLine(), labeled(isLastYear, "前年度分"));
-      this.id = id;
-      this.isLastYear = isLastYear;
-      this.name = row.addCell();
-      this.credit = row.addCell();
-      row.addCell();
-      const button = buttonElement("追加");
-      button.addEventListener("click", () => this.create());
-      row.addCell(button);
+      const idEdit = idInput();
+      idEdit.addEventListener("input", () => this.findSubject());
+      this.idEdit = idEdit;
+      const lastYearCheck = checkBox();
+      this.lastYearCheck = lastYearCheck;
+      row.addCell(idEdit, labeled(lastYearCheck, "前年度分"));
+      this.nameCell = row.addCell();
+      this.creditCell = row.addCell();
+      const scoreEdit = scoreInput();
+      this.scoreEdit = scoreEdit;
+      row.addCell(scoreEdit);
+      const appendButton = buttonElement("追加");
+      appendButton.addEventListener("click", () => this.append());
+      row.addCell(appendButton);
       this.element = row.element;
    }
 
    findSubject() {
-      const subject = this.dict.get(this.id.value);
+      const subject = this.dict.get(this.idEdit.value);
       if (subject === undefined) {
          this.subject = null;
-         this.name.innerText = "";
-         this.credit.innerText = "";
+         this.nameCell.innerText = "";
+         this.creditCell.innerText = "";
          return;
       }
       this.subject = subject;
-      this.name.innerText = subject.name;
-      this.credit.innerText = subject.credit;
+      this.nameCell.innerText = subject.name;
+      this.creditCell.innerText = subject.credit;
    }
 
-   create() {
-      if (this.subject === null) {
+   append() {
+      if (this.subject === null || !this.scoreEdit.checkValidity()) {
          return;
       }
-      const item = grade(this.subject, this.isLastYear.checked);
+      const item = grade(this.subject, this.lastYearCheck.checked);
+      const value = this.scoreEdit.value;
+      if (value === "") {
+         item.state = STATE_PENDING;
+         item.score = null;
+      } else {
+         item.state = +value >= 60 ? STATE_PASSED : STATE_FAILED;
+         item.score = +value;
+      }
       this.list.push(item);
       this.element.parentElement
          .appendChild(new SubjectRecord(item, this.list).element);
       this.subject = null;
-      this.name.innerText = "";
-      this.credit.innerText = "";
-      this.id.value = "";
+      this.nameCell.innerText = "";
+      this.creditCell.innerText = "";
+      this.idEdit.value = "";
+      this.scoreEdit.value = "";
    }
 };
 
@@ -367,10 +407,10 @@ const UI = class {
    bind(grade) {
       this.grade = grade;
       this.subjectsUI = [
-         new EditSubjectRecord(grade.data.subjects, grade.subjects),
          ...grade.common.map(s => new CommonRecord(s)),
          new ToeicRecord(grade.toeic),
-         ...grade.subjects.map(s => new SubjectRecord(s, grade.subject)),
+         new NewSubjectRecord(grade.data.subjects, grade.subjects),
+         ...grade.subjects.map(s => new SubjectRecord(s, grade.subjects)),
       ];
       this.partitionsUI = [
          ...grade.partitions.map(p => new PartitionRecord(p)),
