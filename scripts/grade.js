@@ -259,6 +259,9 @@ const GradeData = class {
       const subjects = json.subjects.map(([id, isLastYear, score]) => {
          const g = grade(data.subjects.get(id), Boolean(isLastYear));
          g.score = score;
+         if (score !== null) {
+            g.state = score >= 60 ? STATE_PASSED : STATE_FAILED;
+         }
          return g;
       });
       return new GradeData(json.year, data, common, subjects, {score: json.toeic});
