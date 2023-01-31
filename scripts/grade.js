@@ -170,16 +170,16 @@ const Calc = class {
       this.all = new Buffer(0);
    }
 
-   runSpan(rule, outer) {
+   runSpan(rule, outer, unweighted) {
       const buf = rule.count ? new Buffer(rule.weight, outer) : outer;
       if (rule.spans) {
-         rule.spans.forEach(span => this.runSpan(span, buf));
+         rule.spans.forEach(span => this.runSpan(span, buf, unweighted ?? buf));
       } else {
          this.subjects.slice(rule.first, rule.last + 1).flat()
             .forEach(item => buf.add(item, item.subject.credit));
       }
       if (rule.count) {
-         buf.flush(rule.count, rule.saturates ? this.all : outer);
+         buf.flush(rule.count, rule.saturates ? unweighted : outer);
       }
    }
 
