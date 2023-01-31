@@ -37,7 +37,7 @@ const SubjectGrade = class {
 const collect = (common, subjects) => {
    const map = new Map(common.map(item => [item.subject.id, new SubjectGrade(item)]));
    for (const item of subjects) {
-      const id = item.subject.id;
+      const id = item.subject.id_n;
       if (map.has(id)) {
          map.get(id).update(item);
       } else {
