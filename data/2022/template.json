@@ -9,8 +9,8 @@
       ["データサイエンス", 2, 1024],
       ["English Reading Skills I", 1, 768],
       ["English Presentation Skills I", 1, 768],
-      ["English Reading Skills II", 1, 256],
-      ["English Presentation Skills II", 1, 256],
+      ["English Reading Skills II", 1, 512],
+      ["English Presentation Skills II", 1, 512],
       ["基礎体育(春)", 0.5, 128],
       ["基礎体育(秋)", 0.5, 128]
    ],

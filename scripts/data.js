@@ -1,8 +1,8 @@
 const subject = (id, [name, credit, fallC, flags, id_n = id]) =>
    ({id, name, credit, flags: flags, isFallC: fallC !== 0, id_n});
 
-const commonSubject = ([name, credit, flags]) =>
-   ({id: flags, name, credit, flags, id_n: flags});
+const commonSubject = (index, [name, credit, flags]) =>
+   ({id: index, name, credit, flags, id_n: index});
 
 const buildRule = data => {
    let rule = {};
@@ -32,7 +32,7 @@ const buildRule = data => {
 const transform = (key, value) => {
    switch (key) {
    case "common":
-      return value.map(s => commonSubject(s));
+      return value.map((s, index) => commonSubject(index, s));
    case "subjects":
       return new Map(Object.entries(value).map(([id, s]) => [id, subject(id, s)]));
    case "special":

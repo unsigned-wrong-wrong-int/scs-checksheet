@@ -86,12 +86,7 @@ const GradeView = class {
    }
 
    scanScores(idList) {
-      return idList.map(id =>
-         this.take(id, true).reduce((a, item) => {
-            a.push(item);
-            return a;
-         }, [])
-      );
+      return idList.map(id => this.take(id, true));
    }
 };
 
