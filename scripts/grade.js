@@ -5,7 +5,7 @@ const STATE_FAILED = 0,
 
 export
 const grade = (subject, isLastYear) =>
-   ({subject, beforeFallC: isLastYear || !subject.isFallC, score: null, state: STATE_PENDING});
+   ({subject, isLastYear, score: null, state: STATE_PENDING});
 
 const stateComp = (x, y) => {
    return Math.sign(x.state - y.state);
@@ -64,7 +64,8 @@ const GradeView = class {
    take(id, noFallC) {
       const matches = typeof id === "number"
          ? noFallC
-            ? item => !item.isFallC && (item.subject.flags & id) === id
+            ? item => (item.isLastYear || !item.subject.isFallC)
+               && (item.subject.flags & id) === id
             : item => (item.subject.flags & id) === id
          : item => item.subject.id_n === id;
       const match = [], rest = [];
