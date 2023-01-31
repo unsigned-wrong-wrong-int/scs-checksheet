@@ -16,8 +16,8 @@ const buildRule = data => {
       for (i = 0; i < data.length && typeof data[i] !== "number"; ++i) {
          rule.spans.push(buildRule(data[i]));
       }
-      rule.first = rule.spans.at(0)?.first;
-      rule.last = rule.spans.at(-1)?.last;
+      rule.first = rule.spans.at(0)?.first ?? -1;
+      rule.last = rule.spans.at(-1)?.last ?? -1;
    }
    if (i < data.length) {
       rule.count = Math.abs(data[i]);
@@ -36,7 +36,7 @@ const transform = (key, value) => {
    case "subjects":
       return new Map(Object.entries(value).map(([id, s]) => [id, subject(id, s)]));
    case "special":
-      return new Map(Object.entries(value).map(([id, [name, credit]]) => [+id, {name, credit}]));
+      return new Map(value.map(([flag, name, credit]) => [flag, {name, credit}]));
    case "test":
    case "calc":
       return buildRule(value);

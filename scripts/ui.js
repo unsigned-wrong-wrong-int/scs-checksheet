@@ -87,6 +87,7 @@ const CommonRecord = class {
 
    change() {
       this.data.state = +this.stateSelect.value;
+      this.onChange?.();
    }
 };
 
@@ -101,7 +102,7 @@ const ToeicRecord = class {
       this.scoreEdit.value = data.score ?? "";
       this.scoreCell = row.addCell(data.score ?? "");
       this.editButton = buttonElement("編集", () => this.beginEdit());
-      this.applyButton = buttonElement("更新", () => this.endEdit());
+      this.applyButton = buttonElement("完了", () => this.endEdit());
       this.buttonCell = row.addCell(this.editButton);
       this.element = row.element;
    }
@@ -123,6 +124,7 @@ const ToeicRecord = class {
       }
       this.scoreCell.replaceChildren(value);
       this.buttonCell.replaceChildren(this.editButton);
+      this.onChange?.();
    }
 };
 
@@ -140,7 +142,7 @@ const SubjectRecord = class {
       this.scoreEdit.value = data.score ?? "";
       this.scoreCell = row.addCell(data.score ?? "");
       this.editButton = buttonElement("編集", () => this.beginEdit());
-      this.applyButton = buttonElement("更新", () => this.endEdit());
+      this.applyButton = buttonElement("完了", () => this.endEdit());
       this.deleteButton = buttonElement("削除", () => this.delete());
       this.buttonCell = row.addCell(this.editButton);
       this.element = row.element;
@@ -168,11 +170,13 @@ const SubjectRecord = class {
       this.idCell.removeChild(this.lastYearLabel);
       this.scoreCell.replaceChildren(value);
       this.buttonCell.replaceChildren(this.editButton);
+      this.onChange?.();
    }
 
    delete() {
       this.list.splice(this.list.indexOf(this.item), 1);
       this.element.remove();
+      this.onChange?.();
    }
 };
 
@@ -184,7 +188,7 @@ const NewSubjectRecord = class {
       const row = new Row;
       this.idEdit = idInput(() => this.findSubject());
       this.lastYearCheck = checkBox();
-      row.addCell(idEdit, labeled(this.lastYearCheck, "前年度分"));
+      row.addCell(this.idEdit, labeled(this.lastYearCheck, "前年度分"));
       this.nameCell = row.addCell();
       this.creditCell = row.addCell();
       this.scoreEdit = scoreInput();
@@ -228,6 +232,7 @@ const NewSubjectRecord = class {
       this.creditCell.innerText = "";
       this.idEdit.value = "";
       this.scoreEdit.value = "";
+      this.onChange?.();
    }
 };
 
@@ -259,7 +264,7 @@ const PartitionRecord = class {
    }
 
    showDetails() {
-      // ...
+      this.onSelect?.(this.data);
    }
 };
 
@@ -281,7 +286,7 @@ const testRuleCell = (rule, colSpan) => {
 const weightCell = (rule, weight) => {
    const td = document.createElement("td");
    td.rowSpan = rule.last - rule.first + 1;
-   td.innerText = weight.toFixed(2);
+   td.innerText = weight.toFixed(1);
    return td;
 };
 
@@ -338,7 +343,8 @@ const subjectCols = (rows, credits, subjects) => {
       const row = rows[i];
       row.push(textCell(credits[i][0]), textCell(credits[i][1]));
       const subject = subjects[i];
-      row.push(textCell(subject.id ?? "―"), textCell(subject.name));
+      row.push(textCell(subject.id ?? "―"), textCell(subject.name),
+         textCell(subject.credit ?? "―"));
    }
 };
 
@@ -349,7 +355,7 @@ const calcCols = (rows, rule) => {
    if (rule.spans) {
       for (const span of rule.spans) {
          if (span.spans) {
-            for (const sub of sub.spans) {
+            for (const sub of span.spans) {
                rows[sub.first].push(weightCell(sub, sub.weight ?? span.weight),
                   calcRuleCell(sub, 1));
             }
@@ -359,9 +365,10 @@ const calcCols = (rows, rule) => {
                calcRuleCell(span, 2));
          }
       }
-      rows[rule.first].push(calcRuleCell(span, 1));
+      rows[rule.first].push(calcRuleCell(rule, 1));
    } else {
-      rows[rule.first].push(weightCell(rule, rule.weight), calcRuleCell(span, 3));
+      rows[rule.first].push(weightCell(rule, rule.weight),
+         blankCell(rule.last - rule.first + 1, 2), calcRuleCell(rule, 1));
    }
    if (rule.last + 1 < rows.length) {
       rows[rule.last + 1].push(blankCell(rows.length - rule.last - 1, 1),
@@ -369,13 +376,18 @@ const calcCols = (rows, rule) => {
    }
 };
 
-const makeTable = (result, data) => {
-   const subjects = result.partition.list.map(id =>
-      (typeof id === "number" ? data.special : data.subjects).get(id));
-   const rows = result.partition.list.map(() => []);
-   testCols(rows, result.partition.test);
-   subjectCols(rows, result.credits, subjects);
-   calcCols(rows, result.partition.calc);
+const showTable = (body, data, dict) => {
+   const subjects = data.partition.list.map(id =>
+      (typeof id === "number" ? dict.special : dict.subjects).get(id));
+   const rows = data.partition.list.map(() => []);
+   testCols(rows, data.partition.test);
+   subjectCols(rows, data.credits, subjects);
+   calcCols(rows, data.partition.calc);
+   body.replaceChildren(...rows.map(cells => {
+      const row = document.createElement("tr");
+      row.append(...cells);
+      return row;
+   }));
 };
 
 const UI = class {
@@ -394,9 +406,13 @@ const UI = class {
          new NewSubjectRecord(grade.data.subjects, grade.subjects),
          ...grade.subjects.map(s => new SubjectRecord(s, grade.subjects)),
       ];
+      const updateFn = this.update.bind(this);
+      this.subjectsUI.forEach(s => s.onChange = updateFn);
       this.partitionsUI = [
          ...grade.partitions.map(p => new PartitionRecord(p)),
       ];
+      const openFn = this.open.bind(this);
+      this.partitionsUI.forEach(p => p.onSelect = openFn);
       this.subjects.replaceChildren(...this.subjectsUI.map(({element}) => element));
       this.partitions.replaceChildren(...this.partitionsUI.map(({element}) => element));
    }
@@ -406,6 +422,10 @@ const UI = class {
       for (let i = 0; i < this.grade.partitions.length; ++i) {
          this.partitionsUI[i].update(this.grade.partitions[i]);
       }
+   }
+
+   open(data) {
+      showTable(this.specified, data, this.grade.data);
    }
 };
 
