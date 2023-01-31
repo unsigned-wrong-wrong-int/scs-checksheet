@@ -1,4 +1,4 @@
-import { fetchData } from "./data";
+import { fetchData } from "./data.js";
 
 export
 const STATE_FAILED = 0,
@@ -144,7 +144,7 @@ const Buffer = class {
    }
 
    flush(count, rest) {
-      this.items.sort((x, y) => x[2] === y[2] ? y[0].score - x[0].score : y[0] - x[0]);
+      this.items.sort((x, y) => x[2] === y[2] ? y[0].score - x[0].score : y[2] - x[2]);
       let i = 0;
       for (let n = 0; i < this.items.length; ++i) {
          const [item, credit, weight] = this.items[i];
