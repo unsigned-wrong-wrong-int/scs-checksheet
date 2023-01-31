@@ -309,7 +309,7 @@ const blankCell = (rowSpan, colSpan) => {
    const td = document.createElement("td");
    td.rowSpan = rowSpan;
    td.colSpan = colSpan;
-   td.classList.add("blank");
+   td.innerText = "―";
    return td;
 };
 
@@ -376,6 +376,15 @@ const calcCols = (rows, rule) => {
    }
 };
 
+const listCols = ([{subject: {id, name}, score}, credit, weight]) =>
+   [textCell(id), textCell(name), textCell(credit), textCell(weight), textCell(score)];
+
+const setRows = (body, rows) => body.replaceChildren(...rows.map(cells => {
+   const row = document.createElement("tr");
+   row.append(...cells);
+   return row;
+}));
+
 const showTable = (body, data, dict) => {
    const subjects = data.partition.list.map(id =>
       (typeof id === "number" ? dict.special : dict.subjects).get(id));
@@ -383,11 +392,12 @@ const showTable = (body, data, dict) => {
    testCols(rows, data.partition.test);
    subjectCols(rows, data.credits, subjects);
    calcCols(rows, data.partition.calc);
-   body.replaceChildren(...rows.map(cells => {
-      const row = document.createElement("tr");
-      row.append(...cells);
-      return row;
-   }));
+   setRows(body, rows);
+};
+
+const showList = (body, data) => {
+   const rows = data.items.map(listCols);
+   setRows(body, rows);
 };
 
 const UI = class {
@@ -426,6 +436,7 @@ const UI = class {
 
    open(data) {
       showTable(this.specified, data, this.grade.data);
+      showList(this.details, data);
    }
 };
 
