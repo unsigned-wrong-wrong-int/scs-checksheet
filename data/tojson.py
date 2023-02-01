@@ -25,7 +25,7 @@ def subject(row):
     return (id_, [name, credit, int(is_fall_c), attr(id_, is_intro), *normalize(id_)])
 
 src = path.join(path.dirname(__file__), sys.argv[1])
-dest = src + '.json'
+dest = path.join(path.dirname(path.dirname(__file__)), sys.argv[1] + '.json')
 
 with open(path.join(src, 'template.json'), encoding='utf-8') as f:
     data = json.load(f)
