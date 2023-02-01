@@ -6,9 +6,10 @@ const Row = class {
       this.element = document.createElement("tr");
    }
 
-   addCell(...content) {
+   addCell(class_, ...content) {
       const cell = document.createElement("td");
       cell.append(...content);
+      cell.className = class_;
       this.element.appendChild(cell);
       return cell;
    }
@@ -42,8 +43,6 @@ const buttonElement = (text, action) => {
    return element;
 }
 
-const newLine = () => document.createElement("br");
-
 const idInput = action => {
    const element = document.createElement("input");
    element.type = "text";
@@ -75,13 +74,13 @@ const CommonRecord = class {
    constructor(data) {
       this.data = data;
       const row = new Row;
-      row.addCell("―");
-      row.addCell(data.subject.name);
-      row.addCell(data.subject.credit);
+      row.addCell("subject-id", "―");
+      row.addCell("subject-name", data.subject.name);
+      row.addCell("subject-credit", data.subject.credit);
       this.stateSelect = selectElement(stateMap, () => this.change());
       this.stateSelect.value = data.state;
-      row.addCell(this.stateSelect);
-      row.addCell();
+      row.addCell("subject-score", this.stateSelect);
+      row.addCell("subject-button");
       this.element = row.element;
    }
 
@@ -95,15 +94,15 @@ const ToeicRecord = class {
    constructor(data) {
       this.data = data;
       const row = new Row;
-      row.addCell("―");
-      row.addCell("TOEIC-IP スコア");
-      row.addCell("―");
+      row.addCell("subject-id", "―");
+      row.addCell("subject-name", "TOEIC-IP スコア");
+      row.addCell("subject-credit", "―");
       this.scoreEdit = scoreInput(5, 990, 5);
       this.scoreEdit.value = data.score ?? "";
-      this.scoreCell = row.addCell(data.score ?? "");
+      this.scoreCell = row.addCell("subject-score", data.score ?? "");
       this.editButton = buttonElement("編集", () => this.beginEdit());
       this.applyButton = buttonElement("完了", () => this.endEdit());
-      this.buttonCell = row.addCell(this.editButton);
+      this.buttonCell = row.addCell("subject-button", this.editButton);
       this.element = row.element;
    }
 
@@ -135,16 +134,16 @@ const SubjectRecord = class {
       const row = new Row;
       this.lastYearCheck = checkBox();
       this.lastYearLabel = labeled(this.lastYearCheck, "前年度分");
-      this.idCell = row.addCell(data.subject.id);
-      row.addCell(data.subject.name);
-      row.addCell(data.subject.credit);
+      this.idCell = row.addCell("subject-id", data.subject.id);
+      row.addCell("subject-name", data.subject.name);
+      row.addCell("subject-credit", data.subject.credit);
       this.scoreEdit = scoreInput();
       this.scoreEdit.value = data.score ?? "";
-      this.scoreCell = row.addCell(data.score ?? "");
+      this.scoreCell = row.addCell("subject-score", data.score ?? "");
       this.editButton = buttonElement("編集", () => this.beginEdit());
       this.applyButton = buttonElement("完了", () => this.endEdit());
       this.deleteButton = buttonElement("削除", () => this.delete());
-      this.buttonCell = row.addCell(this.editButton);
+      this.buttonCell = row.addCell("subject-button", this.editButton);
       this.element = row.element;
    }
 
@@ -188,13 +187,14 @@ const NewSubjectRecord = class {
       const row = new Row;
       this.idEdit = idInput(() => this.findSubject());
       this.lastYearCheck = checkBox();
-      row.addCell(this.idEdit, labeled(this.lastYearCheck, "前年度分"));
-      this.nameCell = row.addCell();
-      this.creditCell = row.addCell();
+      row.addCell("subject-id", this.idEdit,
+         labeled(this.lastYearCheck, "前年度分"));
+      this.nameCell = row.addCell("subject-name");
+      this.creditCell = row.addCell("subject-credit");
       this.scoreEdit = scoreInput();
-      row.addCell(this.scoreEdit);
+      row.addCell("subject-score", this.scoreEdit);
       const appendButton = buttonElement("追加", () => this.append());
-      row.addCell(appendButton);
+      row.addCell("subject-button", appendButton);
       this.element = row.element;
    }
 
@@ -245,11 +245,11 @@ const achievement = new Map([
 const PartitionRecord = class {
    constructor(data) {
       const row = new Row;
-      row.addCell(data.partition.name);
-      this.state = row.addCell();
-      this.score = row.addCell();
-      this.toeic = row.addCell();
-      this.total = row.addCell();
+      row.addCell("partition-name", data.partition.name);
+      this.state = row.addCell("partition-state");
+      this.score = row.addCell("partition-score");
+      this.toeic = row.addCell("partition-toeic");
+      this.total = row.addCell("partition-total");
       this.update(data);
       this.element = row.element;
       this.element.addEventListener("click", () => this.showDetails());
@@ -270,11 +270,12 @@ const PartitionRecord = class {
 
 const testRuleCell = (rule, colSpan) => {
    const td = document.createElement("td");
+   td.className = `specified-test-${colSpan}`;
    td.rowSpan = rule.last - rule.first + 1;
    td.colSpan = colSpan;
    if (rule.count) {
       td.innerText = `${rule.count}単位${rule.saturates ? "\nまで" : ""}`;
-      if (rule.span && colSpan === 1) {
+      if (rule.spans && colSpan === 1) {
          td.classList.add("test-nested");
       }
    } else {
@@ -283,20 +284,39 @@ const testRuleCell = (rule, colSpan) => {
    return td;
 };
 
+const noTestCell = (rowSpan, colSpan) => {
+   const td = document.createElement("td");
+   td.className = `specified-test-${colSpan}`;
+   td.rowSpan = rowSpan;
+   td.colSpan = colSpan;
+   td.innerText = "―";
+   return td;
+};
+
 const weightCell = (rule, weight) => {
    const td = document.createElement("td");
+   td.className = "specified-weight";
    td.rowSpan = rule.last - rule.first + 1;
    td.innerText = weight.toFixed(1);
    return td;
 };
 
+const noWeightCell = rowSpan => {
+   const td = document.createElement("td");
+   td.className = "specified-weight";
+   td.rowSpan = rowSpan;
+   td.innerText = "―";
+   return td;
+};
+
 const calcRuleCell = (rule, colSpan) => {
    const td = document.createElement("td");
+   td.className = `specified-calc-${colSpan}`;
    td.rowSpan = rule.last - rule.first + 1;
    td.colSpan = colSpan;
    if (rule.count) {
       td.innerText = `${rule.count}単位`;
-      if (rule.span && colSpan === 1) {
+      if (rule.spans && colSpan === 1) {
          td.classList.add("calc-nested");
       }
    } else {
@@ -305,23 +325,25 @@ const calcRuleCell = (rule, colSpan) => {
    return td;
 };
 
-const blankCell = (rowSpan, colSpan) => {
+const noCalcCell = (rowSpan, colSpan) => {
    const td = document.createElement("td");
+   td.className = `specified-calc-${colSpan}`;
    td.rowSpan = rowSpan;
    td.colSpan = colSpan;
    td.innerText = "―";
    return td;
 };
 
-const textCell = text => {
+const textCell = (text, class_) => {
    const td = document.createElement("td");
+   td.className = class_;
    td.innerText = text;
    return td;
 };
 
 const testCols = (rows, rule) => {
    if (0 < rule.first) {
-      rows[0].push(blankCell(rule.first, 2));
+      rows[0].push(noTestCell(rule.first, 2));
    }
    for (const span of rule.spans) {
       if (span.spans) {
@@ -334,23 +356,27 @@ const testCols = (rows, rule) => {
       }
    }
    if (rule.last + 1 < rows.length) {
-      rows[rule.last + 1].push(blankCell(rows.length - rule.last - 1, 2));
+      rows[rule.last + 1].push(noTestCell(rows.length - rule.last - 1, 2));
    }
 };
 
 const subjectCols = (rows, credits, subjects) => {
    for (let i = 0; i < rows.length; ++i) {
       const row = rows[i];
-      row.push(textCell(credits[i][0]), textCell(credits[i][1]));
       const subject = subjects[i];
-      row.push(textCell(subject.id ?? "―"), textCell(subject.name),
-         textCell(subject.credit ?? "―"));
+      row.push(
+         textCell(credits[i][0], "specified-credit"),
+         textCell(credits[i][1], "specified-credit"),
+         textCell(subject.id ?? "―", "specified-id"),
+         textCell(subject.name, "specified-name"),
+         textCell(subject.credit ?? "―", "specified-credit"),
+      );
    }
 };
 
 const calcCols = (rows, rule) => {
    if (0 < rule.first) {
-      rows[0].push(blankCell(rule.first, 1), blankCell(rule.first, 3));
+      rows[0].push(noWeightCell(rule.first), noCalcCell(rule.first, 3));
    }
    if (rule.spans) {
       for (const span of rule.spans) {
@@ -368,16 +394,21 @@ const calcCols = (rows, rule) => {
       rows[rule.first].push(calcRuleCell(rule, 1));
    } else {
       rows[rule.first].push(weightCell(rule, rule.weight),
-         blankCell(rule.last - rule.first + 1, 2), calcRuleCell(rule, 1));
+         noCalcCell(rule.last - rule.first + 1, 2), calcRuleCell(rule, 1));
    }
    if (rule.last + 1 < rows.length) {
-      rows[rule.last + 1].push(blankCell(rows.length - rule.last - 1, 1),
-         blankCell(rows.length - rule.last - 1, 3));
+      rows[rule.last + 1].push(noWeightCell(rows.length - rule.last - 1),
+         noCalcCell(rows.length - rule.last - 1, 3));
    }
 };
 
-const listCols = ([{subject: {id, name}, score}, credit, weight]) =>
-   [textCell(id), textCell(name), textCell(credit), textCell(weight), textCell(score)];
+const listCols = ([{subject: {id, name}, score}, credit, weight]) => [
+   textCell(id, "details-id"),
+   textCell(name, "details-name"),
+   textCell(weight, "details-weight"),
+   textCell(credit, "details-credit"),
+   textCell(score, "details-score"),
+];
 
 const setRows = (body, rows) => body.replaceChildren(...rows.map(cells => {
    const row = document.createElement("tr");

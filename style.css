@@ -6,8 +6,126 @@ table {
 
 th, td {
    border: solid 1px;
+   padding: 0 0.2em;
+   line-height: 1.8;
 }
 
 input, button, select {
    font: inherit;
+   line-height: initial;
+}
+
+td > input[type="text"],
+td > input[type="number"],
+td > select,
+td > button,
+td > label {
+   display: block;
+   box-sizing: border-box;
+   width: 100%;
+}
+
+.subject-id {
+   text-align: center;
+   width: 7em;
+}
+.subject-name {
+   width: 18em;
+}
+.subject-credit {
+   text-align: center;
+   width: 3em;
+}
+.subject-score {
+   text-align: center;
+   width: 5em;
+}
+.subject-button {
+   width: 3em;
+}
+
+.partition-name {
+   width: 10em;
+}
+.partition-state {
+   text-align: center;
+   width: 4em;
+}
+.partition-score {
+   text-align: end;
+   width: 6em;
+}
+.partition-toeic {
+   text-align: end;
+   width: 6em;
+}
+.partition-total {
+   text-align: end;
+   width: 6em;
+}
+
+.specified-test-1 {
+   text-align: center;
+   width: 4em;
+}
+.specified-test-2 {
+   text-align: center;
+   width: 8em;
+}
+.specified-credit {
+   text-align: center;
+   width: 3em;
+}
+.specified-id {
+   text-align: center;
+   width: 7em;
+}
+.specified-name {
+   width: 18em;
+}
+.specified-weight {
+   text-align: center;
+   width: 4em;
+}
+.specified-calc-1 {
+   text-align: center;
+   width: 4em;
+}
+.specified-calc-2 {
+   text-align: center;
+   width: 8em;
+}
+.specified-calc-3 {
+   text-align: center;
+   width: 12em;
+}
+.test-nested, .calc-blank {
+   border-right: none;
+}
+.calc-nested, .test-blank {
+   border-left: none;
+}
+
+.details-id {
+   text-align: center;
+   width: 7em;
+}
+.details-name {
+   width: 18em;
+}
+.details-weight {
+   text-align: center;
+   width: 3em;
+}
+.details-credit {
+   text-align: center;
+   width: 3em;
+}
+.details-score {
+   text-align: center;
+   width: 3em;
+}
+
+#partitions > tr:hover {
+   font-weight: bold;
 }
