@@ -1,0 +1,13 @@
+table {
+   border: solid 2px;
+   border-collapse: collapse;
+   margin: 1em;
+}
+
+th, td {
+   border: solid 1px;
+}
+
+input, button, select {
+   font: inherit;
+}
