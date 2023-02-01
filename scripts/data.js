@@ -53,7 +53,7 @@ const fetchData = async year => {
    if (cache.has(year)) {
       return cache.get(year);
    }
-   const data = JSON.parse(await (await fetch(`../${year}.json`)).text(), transform);
+   const data = JSON.parse(await (await fetch(`../data/${year}.json`)).text(), transform);
    cache.set(year, data);
    return data;
 };
