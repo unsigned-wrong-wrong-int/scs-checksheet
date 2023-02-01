@@ -172,7 +172,7 @@ const SubjectRecord = class {
    }
 
    delete() {
-      this.list.splice(this.list.indexOf(this.item), 1);
+      this.list.splice(this.list.indexOf(this.data), 1);
       this.element.remove();
       this.onChange?.();
    }
