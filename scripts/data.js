@@ -53,7 +53,12 @@ const fetchData = async year => {
    if (cache.has(year)) {
       return cache.get(year);
    }
-   const data = JSON.parse(await (await fetch(`../data/${year}.json`)).text(), transform);
+   const path = `${window.location.href}/data/${year}.json`;
+   const response = await fetch(path);
+   if (!response.ok) {
+      throw new Error('Failed to fetch ' + path);
+   }
+   const data = JSON.parse(await response.text(), transform);
    cache.set(year, data);
    return data;
 };
