@@ -245,7 +245,7 @@ const GradeData = class {
          year: this.year,
          common: this.common.map(({state}) => state),
          subjects: this.subjects.map(
-            ({subject: {id, isLastYear}, score}) => [id, +isLastYear, score]),
+            ({subject: {id}, isLastYear, score}) => [id, +isLastYear, score]),
          toeic: this.toeic.score,
       };
    }
