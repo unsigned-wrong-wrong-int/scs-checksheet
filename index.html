@@ -8,71 +8,82 @@
       <link rel="stylesheet" type="text/css" href="./style.css">
    </head>
    <body>
-      <div id="input">
-         <table>
-            <thead>
-               <tr>
-                  <th>科目番号</th>
-                  <th>科目名</th>
-                  <th>単位</th>
-                  <th>成績</th>
-                  <th></th>
-               </tr>
-            </thead>
-            <tbody id="subjects">
-            </tbody>
-         </table>
+      <div id="menu">
+         <button id="menu-open">開く</button>
+         <button id="menu-save">保存</button>
+         <div class="separator"></div>
+         <button id="menu-input" disabled>入力</button>
+         <button id="menu-list">一覧</button>
+         <div class="separator"></div>
+         <div id="page-name"></div>
       </div>
-      <div id="list">
-         <table>
-            <thead>
-               <tr>
-                  <th>移行区分</th>
-                  <th>応募要件</th>
-                  <th>成績点</th>
-                  <th>TOEIC</th>
-                  <th>計</th>
-               </tr>
-            </thead>
-            <tbody id="partitions">
-            </tbody>
-         </table>
-      </div>
-      <div id="sheet">
-         <table>
-            <thead>
-               <tr>
-                  <th rowspan="2" colspan="2">応募要件</th>
-                  <th colspan="2">履修状況</th>
-                  <th rowspan="2">科目番号</th>
-                  <th rowspan="2">科目名</th>
-                  <th rowspan="2">単位</th>
-                  <th rowspan="2">重み</th>
-                  <th colspan="3">上限単位数</th>
-               </tr>
-               <tr>
-                  <th>修得</th>
-                  <th>履修中</th>
-                  <th colspan="2">重点科目</th>
-                  <th>合計</th>
-               </tr>
-            </thead>
-            <tbody id="specified">
-            </tbody>
-         </table>
-         <table>
-            <thead>
-               <tr>
-                  <th>科目番号</th>
-                  <th>科目名</th>
-                  <th>重み</th>
-                  <th>単位</th>
-                  <th>評点</th>
-               </tr>
-            </thead>
-            <tbody id="details">
-            </tbody>
-         </table>
+      <div id="container">
+         <div id="input" class="page active">
+            <table>
+               <thead>
+                  <tr>
+                     <th>科目番号</th>
+                     <th>科目名</th>
+                     <th>単位</th>
+                     <th>成績</th>
+                     <th></th>
+                  </tr>
+               </thead>
+               <tbody id="subjects">
+               </tbody>
+            </table>
+         </div>
+         <div id="list" class="page">
+            <table>
+               <thead>
+                  <tr>
+                     <th>移行区分</th>
+                     <th>応募要件</th>
+                     <th>成績点</th>
+                     <th>TOEIC</th>
+                     <th>計</th>
+                  </tr>
+               </thead>
+               <tbody id="partitions">
+               </tbody>
+            </table>
+         </div>
+         <div id="sheet" class="page">
+            <table>
+               <thead>
+                  <tr>
+                     <th rowspan="2" colspan="2">応募要件</th>
+                     <th colspan="2">履修状況</th>
+                     <th rowspan="2">科目番号</th>
+                     <th rowspan="2">科目名</th>
+                     <th rowspan="2">単位</th>
+                     <th rowspan="2">重み</th>
+                     <th colspan="3">上限単位数</th>
+                  </tr>
+                  <tr>
+                     <th>修得</th>
+                     <th>履修中</th>
+                     <th colspan="2">重点科目</th>
+                     <th>合計</th>
+                  </tr>
+               </thead>
+               <tbody id="specified">
+               </tbody>
+            </table>
+            <table>
+               <thead>
+                  <tr>
+                     <th>科目番号</th>
+                     <th>科目名</th>
+                     <th>重み</th>
+                     <th>単位</th>
+                     <th>評点</th>
+                  </tr>
+               </thead>
+               <tbody id="details">
+               </tbody>
+            </table>
+         </div>
       </div>
    </body>
 </html>

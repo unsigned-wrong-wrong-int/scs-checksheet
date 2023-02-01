@@ -1,3 +1,33 @@
+#menu {
+   display: flex;
+   align-items: center;
+}
+
+#menu > button, #menu > div {
+   margin: 0.2em;
+   padding: 0.2em 1em;
+}
+
+#page-name.opened {
+   font-weight: bold;
+   border: solid 2px;
+   text-align: center;
+   width: 12em;
+}
+
+.separator::after {
+   content: '|';
+}
+
+.page {
+   display: none;
+}
+
+.page.active {
+   display: flex;
+   flex-wrap: wrap;
+}
+
 table {
    border: solid 2px;
    border-collapse: collapse;
