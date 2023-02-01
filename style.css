@@ -8,6 +8,10 @@
    padding: 0.2em 1em;
 }
 
+#menu > button {
+   cursor: pointer;
+}
+
 #file-picker, #file-link {
    display: none;
 }
@@ -162,4 +166,5 @@ td > label {
 
 #partitions > tr:hover {
    font-weight: bold;
+   cursor: pointer;
 }
