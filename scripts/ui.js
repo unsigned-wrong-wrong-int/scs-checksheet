@@ -1,4 +1,4 @@
-import { STATE_FAILED, STATE_PASSED, STATE_PENDING, GradeData, grade } from "./grade.js";
+import { STATE_FAILED, STATE_PASSED, STATE_PENDING, grade } from "./grade.js";
 
 const Row = class {
    constructor() {
@@ -69,6 +69,7 @@ const stateMap = [
    [STATE_FAILED, "未修得"],
 ];
 
+export
 const CommonRecord = class {
    constructor(data) {
       this.data = data;
@@ -89,6 +90,7 @@ const CommonRecord = class {
    }
 };
 
+export
 const ToeicRecord = class {
    constructor(data) {
       this.data = data;
@@ -126,6 +128,7 @@ const ToeicRecord = class {
    }
 };
 
+export
 const SubjectRecord = class {
    constructor(data, list) {
       this.data = data;
@@ -178,6 +181,7 @@ const SubjectRecord = class {
    }
 };
 
+export
 const NewSubjectRecord = class {
    constructor(dict, list) {
       this.dict = dict;
@@ -241,6 +245,7 @@ const achievement = new Map([
    [STATE_PASSED, "充足"],
 ]);
 
+export
 const PartitionRecord = class {
    constructor(data) {
       const row = new Row;
@@ -414,6 +419,7 @@ const setRows = (body, rows) => body.replaceChildren(...rows.map(cells => {
    return row;
 }));
 
+export
 const showTable = (body, data, dict) => {
    const subjects = data.partition.list.map(id =>
       (typeof id === "number" ? dict.special : dict.subjects).get(id));
@@ -424,164 +430,8 @@ const showTable = (body, data, dict) => {
    setRows(body, rows);
 };
 
+export
 const showList = (body, data) => {
    const rows = data.items.map(listCols);
    setRows(body, rows);
 };
-
-const UI = class {
-   constructor() {
-      this.menuOpen = document.getElementById("menu-open");
-      this.menuSave = document.getElementById("menu-save");
-      this.menuInput = document.getElementById("menu-input");
-      this.menuList = document.getElementById("menu-list");
-      this.filePicker = document.getElementById("file-picker");
-      this.fileLink = document.getElementById("file-link");
-      this.pageName = document.getElementById("page-name");
-      this.inputPage = document.getElementById("input");
-      this.listPage = document.getElementById("list");
-      this.sheetPage = document.getElementById("sheet");
-      this.subjects = document.getElementById("subjects");
-      this.partitions = document.getElementById("partitions");
-      this.specified = document.getElementById("specified");
-      this.details = document.getElementById("details");
-      this.menuOpen.addEventListener("click", () => this.filePicker.click());
-      this.filePicker.addEventListener("change", this.loadFile.bind(this));
-      this.menuSave.addEventListener("click", this.saveFile.bind(this));
-      this.menuInput.addEventListener("click", this.openInput.bind(this));
-      this.menuList.addEventListener("click", this.openList.bind(this));
-      this.active = this.inputPage;
-   }
-
-   bind(grade) {
-      this.grade = grade;
-      this.subjectsUI = [
-         ...grade.common.map(s => new CommonRecord(s)),
-         new ToeicRecord(grade.toeic),
-         new NewSubjectRecord(grade.data.subjects, grade.subjects),
-         ...grade.subjects.map(s => new SubjectRecord(s, grade.subjects)),
-      ];
-      const updateFn = () => void (this.changed = true);
-      this.subjectsUI.forEach(s => s.onChange = updateFn);
-      this.partitionsUI = [
-         ...grade.partitions.map(p => new PartitionRecord(p)),
-      ];
-      const openFn = this.openSheet.bind(this);
-      this.partitionsUI.forEach(p => p.onSelect = openFn);
-      this.subjects.replaceChildren(...this.subjectsUI.map(({element}) => element));
-      this.partitions.replaceChildren(...this.partitionsUI.map(({element}) => element));
-      this.changed = true;
-      this.openInput();
-   }
-
-   update() {
-      if (!this.changed) {
-         return;
-      }
-      this.changed = false;
-      this.grade.update();
-      for (let i = 0; i < this.grade.partitions.length; ++i) {
-         this.partitionsUI[i].update(this.grade.partitions[i]);
-      }
-   }
-
-   async init() {
-      this.bind(await GradeData.get(year));
-   }
-
-   async loadFile() {
-      const file = this.filePicker.files.item(0);
-      if (!file) {
-         return;
-      }
-      const content = JSON.parse(await file.text());
-      this.bind(await GradeData.fromJSON(content));
-   }
-
-   async saveFile() {
-      const content = JSON.stringify(this.grade);
-      const blob = new Blob([content], {type: "application/json"});
-      const url = URL.createObjectURL(blob);
-      this.fileLink.href = url;
-      this.fileLink.click();
-      URL.revokeObjectURL(url);
-      this.fileLink.href = "";
-   }
-
-   openInput() {
-      this.menuInput.disabled = true;
-      this.menuList.disabled = false;
-      this.active.classList.remove("active");
-      this.pageName.innerText = "";
-      this.pageName.classList.remove("opened");
-      this.update();
-      this.active = this.inputPage;
-      this.active.classList.add("active");
-      window.scrollTo(0, 0);
-   }
-
-   openList() {
-      this.menuInput.disabled = false;
-      this.menuList.disabled = true;
-      this.active.classList.remove("active");
-      this.pageName.innerText = "";
-      this.pageName.classList.remove("opened");
-      this.update();
-      this.active = this.listPage;
-      this.active.classList.add("active");
-      window.scrollTo(0, 0);
-   }
-
-   openSheet(data) {
-      this.menuInput.disabled = this.menuList.disabled = false;
-      this.active.classList.remove("active");
-      this.update();
-      this.pageName.innerText = data.partition.name;
-      this.pageName.classList.add("opened");
-      showTable(this.specified, data, this.grade.data);
-      showList(this.details, data);
-      this.active = this.sheetPage;
-      this.active.classList.add("active");
-      window.scrollTo(0, 0);
-   }
-};
-
-const main = async () => {
-   let ui = new UI();
-   let sample = {
-      "year": 2022,
-      "common": [2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2],
-      "subjects": [
-         ["1207011", 0, 92],
-         ["2141133", 0, 95],
-         ["2148163", 0, 90],
-         ["36H5012", 0, 87],
-         ["36J5012", 0, 93],
-         ["BC51021", 0, 80],
-         ["CA10061", 0, 94],
-         ["CC11221", 0, 98],
-         ["FA011E1", 0, 98],
-         ["FA012E1", 0, 95],
-         ["FCB1201", 0, 100],
-         ["FCB1261", 0, 98],
-         ["FE11271", 0, 92],
-         ["GA12111", 0, 83],
-         ["GA12201", 0, 90],
-         ["GA12301", 0, 96],
-         ["GA12401", 0, 90],
-         ["GA13401", 0, 94],
-         ["GA13501", 0, 93],
-         ["GA14111", 0, 100],
-         ["GA14201", 0, 98],
-         ["GA15111", 0, 88],
-         ["GA15211", 0, 89],
-         ["GA15311", 0, 82],
-         ["GA18212", 0, 100]
-      ],
-      "toeic": 835
-   };
-   let grade = await GradeData.fromJSON(sample);
-   ui.bind(grade);
-};
-
-main();
