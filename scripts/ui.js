@@ -435,6 +435,8 @@ const UI = class {
       this.menuSave = document.getElementById("menu-save");
       this.menuInput = document.getElementById("menu-input");
       this.menuList = document.getElementById("menu-list");
+      this.filePicker = document.getElementById("file-picker");
+      this.fileLink = document.getElementById("file-link");
       this.pageName = document.getElementById("page-name");
       this.inputPage = document.getElementById("input");
       this.listPage = document.getElementById("list");
@@ -443,7 +445,8 @@ const UI = class {
       this.partitions = document.getElementById("partitions");
       this.specified = document.getElementById("specified");
       this.details = document.getElementById("details");
-      this.menuOpen.addEventListener("click", this.loadFile.bind(this));
+      this.menuOpen.addEventListener("click", () => this.filePicker.click());
+      this.filePicker.addEventListener("change", this.loadFile.bind(this));
       this.menuSave.addEventListener("click", this.saveFile.bind(this));
       this.menuInput.addEventListener("click", this.openInput.bind(this));
       this.menuList.addEventListener("click", this.openList.bind(this));
@@ -487,13 +490,22 @@ const UI = class {
    }
 
    async loadFile() {
-      // const content = ...;
-      // this.bind(await GradeData.fromJSON(JSON.parse(content)));
+      const file = this.filePicker.files.item(0);
+      if (!file) {
+         return;
+      }
+      const content = JSON.parse(await file.text());
+      this.bind(await GradeData.fromJSON(content));
    }
 
    async saveFile() {
-      // const content = JSON.stringify(this.grade);
-      // ...;
+      const content = JSON.stringify(this.grade);
+      const blob = new Blob([content], {type: "application/json"});
+      const url = URL.createObjectURL(blob);
+      this.fileLink.href = url;
+      this.fileLink.click();
+      URL.revokeObjectURL(url);
+      this.fileLink.href = "";
    }
 
    openInput() {
@@ -536,7 +548,39 @@ const UI = class {
 
 const main = async () => {
    let ui = new UI();
-   let grade = await GradeData.create(2022);
+   let sample = {
+      "year": 2022,
+      "common": [2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2],
+      "subjects": [
+         ["1207011", 0, 92],
+         ["2141133", 0, 95],
+         ["2148163", 0, 90],
+         ["36H5012", 0, 87],
+         ["36J5012", 0, 93],
+         ["BC51021", 0, 80],
+         ["CA10061", 0, 94],
+         ["CC11221", 0, 98],
+         ["FA011E1", 0, 98],
+         ["FA012E1", 0, 95],
+         ["FCB1201", 0, 100],
+         ["FCB1261", 0, 98],
+         ["FE11271", 0, 92],
+         ["GA12111", 0, 83],
+         ["GA12201", 0, 90],
+         ["GA12301", 0, 96],
+         ["GA12401", 0, 90],
+         ["GA13401", 0, 94],
+         ["GA13501", 0, 93],
+         ["GA14111", 0, 100],
+         ["GA14201", 0, 98],
+         ["GA15111", 0, 88],
+         ["GA15211", 0, 89],
+         ["GA15311", 0, 82],
+         ["GA18212", 0, 100]
+      ],
+      "toeic": 835
+   };
+   let grade = await GradeData.fromJSON(sample);
    ui.bind(grade);
 };
 
