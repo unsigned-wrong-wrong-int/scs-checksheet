@@ -41,7 +41,7 @@ body {
 .page.active {
    display: block;
    margin: 1em;
-   overflow: scroll;
+   overflow: auto;
 }
 
 table {
