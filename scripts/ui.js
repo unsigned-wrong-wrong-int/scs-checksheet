@@ -45,7 +45,7 @@ const buttonElement = (text, action) => {
 const idInput = action => {
    const element = document.createElement("input");
    element.type = "text";
-   element.pattern = "[\\dA-Z]{3}\\d{4}";
+   element.pattern = "[\\dA-Z]{7}";
    element.placeholder = "科目番号";
    element.addEventListener("input", action);
    return element;
