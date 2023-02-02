@@ -1,6 +1,13 @@
+body {
+   margin: 0;
+   padding: 0;
+}
+
 #menu {
    display: flex;
    align-items: center;
+   flex-wrap: wrap;
+   margin: 1em;
 }
 
 #menu > button, #menu > div {
@@ -33,12 +40,18 @@
 
 .page.active {
    display: block;
+   margin: 1em;
+   overflow: scroll;
 }
 
 table {
    border: solid 2px;
    border-collapse: collapse;
-   margin: 1em;
+   width: max-content;
+}
+
+table + table {
+   margin-top: 2em;
 }
 
 th, td {
@@ -161,6 +174,10 @@ td > label {
 .details-score {
    text-align: center;
    width: 3em;
+}
+
+th.partition-score, th.partition-toeic, th.partition-total {
+   text-align: center;
 }
 
 #partitions > tr:hover {
