@@ -4,88 +4,8 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <title>移行チェックシート</title>
-      <script src="./scripts/main.js" type="module"></script>
       <link rel="stylesheet" type="text/css" href="./style.css">
    </head>
    <body>
-      <div id="menu">
-         <button id="menu-open">開く</button>
-         <button id="menu-save">保存</button>
-         <input id="file-picker" type="file" accept=".json">
-         <a id="file-link" type="application/json" download="移行チェックシート.json"></a>
-         <div class="separator"></div>
-         <button id="menu-input">入力</button>
-         <button id="menu-list">一覧</button>
-         <div class="separator"></div>
-         <div id="page-name"></div>
-      </div>
-      <div id="container">
-         <div id="input" class="page active">
-            <table>
-               <thead>
-                  <tr>
-                     <th class="subject-id">科目番号</th>
-                     <th class="subject-name">科目名</th>
-                     <th class="subject-credit">単位</th>
-                     <th class="subject-score">成績</th>
-                     <th></th>
-                  </tr>
-               </thead>
-               <tbody id="subjects">
-               </tbody>
-            </table>
-         </div>
-         <div id="list" class="page">
-            <table>
-               <thead>
-                  <tr>
-                     <th class="partition-name">移行区分</th>
-                     <th class="partition-state">応募要件</th>
-                     <th class="partition-score">成績点</th>
-                     <th class="partition-toeic">TOEIC</th>
-                     <th class="partition-total">計</th>
-                  </tr>
-               </thead>
-               <tbody id="partitions">
-               </tbody>
-            </table>
-         </div>
-         <div id="sheet" class="page">
-            <table>
-               <thead>
-                  <tr>
-                     <th rowspan="2" colspan="2" class="specified-test-2">応募要件</th>
-                     <th colspan="2">履修状況</th>
-                     <th rowspan="2" class="specified-id">科目番号</th>
-                     <th rowspan="2" class="specified-name">科目名</th>
-                     <th rowspan="2" class="specified-credit">単位</th>
-                     <th rowspan="2" class="specified-weight">重み</th>
-                     <th colspan="3">上限単位数</th>
-                  </tr>
-                  <tr>
-                     <th class="specified-credit">修得</th>
-                     <th class="specified-credit">履修中</th>
-                     <th colspan="2" class="specified-calc-2">重点科目</th>
-                     <th class="specified-calc-1">合計</th>
-                  </tr>
-               </thead>
-               <tbody id="specified">
-               </tbody>
-            </table>
-            <table>
-               <thead>
-                  <tr>
-                     <th class="details-id">科目番号</th>
-                     <th class="details-name">科目名</th>
-                     <th class="details-weight">重み</th>
-                     <th class="details-credit">単位</th>
-                     <th class="details-score">評点</th>
-                  </tr>
-               </thead>
-               <tbody id="details">
-               </tbody>
-            </table>
-         </div>
-      </div>
    </body>
 </html>
