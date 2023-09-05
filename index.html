@@ -7,5 +7,46 @@
       <link rel="stylesheet" type="text/css" href="./style.css">
    </head>
    <body>
+      <header>
+         <h1>移行チェックシート</h1>
+         <div>
+            <select id="version">
+               <option value="2023" disabled>2023年度</option>
+               <option value="2022">2022年度</option>
+            </select>
+         </div>
+      </header>
+      <main>
+         <section id="tab-bar">
+            <input id="tab-input" type="radio" name="tab">
+            <label for="tab-input"><span>成績入力</span></label>
+            <input id="tab-list" type="radio" name="tab" checked>
+            <label for="tab-list"><span>移行区分一覧</span></label>
+            <input id="tab-0" type="radio" name="tab">
+            <label for="tab-0"><span>人文学類</span><button>×</button></label>
+            <input id="tab-1" type="radio" name="tab">
+            <label for="tab-1"><span>比較文化学類</span><button>×</button></label>
+            <input id="tab-2" type="radio" name="tab">
+            <label for="tab-2"><span>日本語・日本文化学類</span><button>×</button></label>
+            <input id="tab-3" type="radio" name="tab">
+            <label for="tab-3"><span>社会学類</span><button>×</button></label>
+            <input id="tab-4" type="radio" name="tab">
+            <label for="tab-4"><span>国際総合学類</span><button>×</button></label>
+            <input id="tab-5" type="radio" name="tab">
+            <label for="tab-5"><span>教育学類</span><button>×</button></label>
+            <input id="tab-6" type="radio" name="tab">
+            <label for="tab-6"><span>心理学類</span><button>×</button></label>
+            <input id="tab-7" type="radio" name="tab">
+            <label for="tab-7"><span>障害科学類</span><button>×</button></label>
+            <input id="tab-8" type="radio" name="tab">
+            <label for="tab-8"><span>生物学類 (区分A)</span><button>×</button></label>
+            <input id="tab-9" type="radio" name="tab">
+            <label for="tab-9"><span>生物学類 (区分B)</span><button>×</button></label>
+         </section>
+         <section id="tab-page">
+            <div id="page-input"></div>
+            <div id="page-list"></div>
+         </section>
+      </main>
    </body>
 </html>
