@@ -14,7 +14,7 @@ body {
    width: 100vw;
    height: 100vh;
    display: grid;
-   grid-template-rows: auto 1fr;
+   grid-template-rows: auto 1fr auto;
 }
 
 header {
@@ -26,7 +26,7 @@ header {
 }
 
 header > h1 {
-   margin: 0.5rem 0;
+   margin: 0.2rem 0;
    text-align: center;
    grid-column: 1;
 }
@@ -42,6 +42,19 @@ header > div {
    border: none;
    color: inherit;
    background-color: inherit;
+}
+
+footer {
+   grid-row: 3;
+   padding: 0.2rem 0;
+   text-align: center;
+   background-image: var(--header-bg);
+   color: var(--header-txt);
+}
+
+footer > a {
+   text-decoration: underline;
+   color: inherit;
 }
 
 main {
@@ -62,7 +75,7 @@ main {
 }
 
 #tab-bar > label {
-   margin: 0.4rem 0.2rem 0 0.2rem;
+   margin: 0 0.2rem;
    padding: 0.4rem 0.5rem;
    flex-shrink: 0;
    border-radius: 0.4rem 0.4rem 0 0;
