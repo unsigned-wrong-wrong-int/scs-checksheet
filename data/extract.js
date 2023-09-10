@@ -31,7 +31,7 @@ const groups = [
 
 // 除外科目:
 //  ファーストイヤーセミナー, 学問への誘い, EPS, ERS, 情報, 国語, 芸術, 教職, 博物館
-const isExcluded = (id, module, isThisYear) => /^11|^122[78]|^31[H-L]|^[4569]/.test(id);
+const isExcluded = id => /^11|^122[78]|^31[H-L]|^[4569]/.test(id);
 
 // 比文の「哲学・倫理学・宗教学」科目 (看護学類の重点科目)
 const cccList = [
@@ -99,15 +99,10 @@ const kdb2022 = read("./kdb_2022.xlsx", false), kdb2023 = read("kdb_2023.xlsx", 
       map.set(v[3], id);
    }
 
-   // 社工のプログラミング入門を情報学群のプログラミング入門に読み替える (科目コードが異なるので必要)
-   map.set("FH60474", "GA18212");
-
    const update = subjects => {
-      for (const [id, v] of Object.entries(subjects)) {
-         // 科目番号 → [科目名, 単位数, フラグ, 正規化された科目番号]
-         v[3] = map.get(v[3]) ?? id;
-         // 正規化で番号が変わらない場合は省略
-         if (v[3] === id) v.pop();
+      for (const [, v] of Object.entries(subjects)) {
+         // 科目番号 → [科目名, 単位数, フラグ, 科目コード]
+         v[3] = map.get(v[3]) ?? v[3];
       }
    };
    update(kdb2022);
