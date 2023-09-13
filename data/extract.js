@@ -1,32 +1,33 @@
 import * as xlsx from 'https://cdn.sheetjs.com/xlsx-0.20.0/package/xlsx.mjs';
 
-const groups = [
-   // 成績点算入対象科目
+// [フラグ, 名前, (単位数)]
+const categories = [
    [1, "全ての科目"],
    [2, "専門基礎科目・専門科目"],
    [4, "専門導入科目"],
    [8, "専門導入科目・看護学類の指定する科目"],
    [16, "医学類開設科目"],
-   // 共通科目
-   [-1, "英語(春)", 2, [
-      ["English Reading Skills I", 1],
-      ["English Presentation Skills I", 1],
-   ]],
-   [-2, "英語(秋)", 2, [
-      ["English Reading Skills II", 1],
-      ["English Presentation Skills II", 1],
-   ]],
-   [-3, "情報", 4, [
-      ["情報リテラシー(講義)", 1],
-      ["情報リテラシー(演習)", 1],
-      ["データサイエンス", 2],
-   ]],
-   [-4, "ファーストイヤーセミナー", 1],
-   [-5, "学問への誘い", 1],
-   [-6, "体育(春・秋)", 1, [
-      ["基礎体育(春)", 0.5],
-      ["基礎体育(秋)", 0.5],
-   ]],
+   [32, "英語(春)", 2],
+   [64, "英語(春・秋)", 4],
+   [128, "情報", 4],
+   [256, "ファーストイヤーセミナー", 1],
+   [512, "学問への誘い", 1],
+   [1024, "体育(春・秋)", 1],
+];
+
+// 共通科目のうち、移行要件に設定されるもの
+const common = [
+   ["English Reading Skills I", 1, 32 | 64, 0],
+   ["English Presentation Skills I", 1, 32 | 64, 1],
+   ["English Reading Skills II", 1, 64, 2],
+   ["English Presentation Skills II", 1, 64, 3],
+   ["情報リテラシー(講義)", 1, 128, 4],
+   ["情報リテラシー(演習)", 1, 128, 5],
+   ["データサイエンス", 2, 128, 6],
+   ["ファーストイヤーセミナー", 1, 256, 7],
+   ["学問への誘い", 1, 512, 8],
+   ["基礎体育(春)", 0.5, 1024, 9],
+   ["基礎体育(秋)", 0.5, 1024, 10],
 ];
 
 // 除外科目:
@@ -111,9 +112,12 @@ const kdb2022 = read("./kdb_2022.xlsx", false), kdb2023 = read("kdb_2023.xlsx", 
 
 const data = {
    tables,
-   groups,
-   2022: kdb2022,
-   2023: kdb2023,
+   categories,
+   subjects: {
+      common,
+      2022: kdb2022,
+      2023: kdb2023,
+   },
 };
 
 Deno.writeTextFileSync("./data.json", JSON.stringify(data));

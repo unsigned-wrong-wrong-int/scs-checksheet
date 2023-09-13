@@ -24,14 +24,14 @@
    {
       "name": "社会学類",
       "list": ["BB05011", "BB05021", "BB05031", "BB05041", "BC50111", "BC50121", "BC50131", "BC50141"],
-      "required": [{"range": [0, 7], "min": 2, "sub": [{"range": [0, 3], "min": 1}]}],
+      "required": [{"sub": [{"range": [0, 3], "min": 1}, {"range": [4, 7]}], "min": 2}],
       "max": 24,
       "full": 2400
    },
    {
       "name": "国際総合学類",
       "list": ["BC50111", "BC50121", "BC50131", "BC50141", "BB05011", "BB05021", "BB05031", "BB05041"],
-      "required": [{"range": [0, 7], "min": 2, "sub": [{"range": [0, 3], "min": 1}]}],
+      "required": [{"sub": [{"range": [0, 3], "min": 1}, {"range": [4, 7]}], "min": 2}],
       "max": 24,
       "full": 2400
    },
@@ -61,10 +61,10 @@
          "FA01711", "GA15211", "FCB1201", "FCB1241", "FCB1301", "FCB1341", "FE11171", "FE11181"
       ],
       "required": [{"range": [0, 6], "min": 1}],
-      "weighted": {"range": [0, 23], "max": 6, "weight": 1, "sub": [
-         {"range": [0, 5], "max": 2, "weight": 2},
-         {"range": [12, 14], "max": 2}, {"range": [15, 17], "max": 2}
-      ]},
+      "weighted": [{"sub": [
+         {"range": [0, 5], "max": 2, "weight": 2}, {"range": [6, 11]},
+         {"range": [12, 14], "max": 2}, {"range": [15, 17], "max": 2}, {"range": [18, 23]}
+      ], "max": 6, "weight": 1}],
       "max": 24,
       "full": 980
    },
@@ -78,7 +78,7 @@
    {
       "name": "生物資源学類",
       "list": [
-         -1, -3, -4, "EC12201", "EC12301", "EC12401", "EC12501", "AB50B11", "AB50C11", "BB05011",
+         32, 128, 256, "EC12201", "EC12301", "EC12401", "EC12501", "AB50B11", "AB50C11", "BB05011",
          "BB05021", "BB05031", "BB05041", "EB00001", "EB11131", "EB11221", "EB11311", "EB11611",
          "EB11721", "EB11811", "EE11151", "EE11161", "EE11251", "EE11261", "FA01111", "FA01211",
          "FA01311", "FA01411", "GA15311", "FA01511", "FA01611", "FA01711", "GA15211", "FA01811",
@@ -87,10 +87,11 @@
          "HB21221"
       ],
       "required": [{"range": [0, 2]}],
-      "weighted": {"range": [3, 50], "max": 6, "weight": 1, "sub": [
-         {"range": [3, 6], "max": 2, "weight": 2},
-         {"range": [26, 28], "max": 2}, {"range": [30, 32], "max": 2}
-      ]},
+      "weighted": [{"sub": [
+         {"range": [3, 6], "max": 2, "weight": 2}, {"range": [7, 25]},
+         {"range": [26, 28], "max": 2}, {"range": [29, 29]},
+         {"range": [30, 32], "max": 2}, {"range": [33, 50]}
+      ], "max": 6, "weight": 1}],
       "max": 24,
       "full": 980,
       "toeic": 100
@@ -105,9 +106,10 @@
          "FE11171","FE11181", "FE11191"
       ],
       "required": [{"range": [0, 3], "min": 2}],
-      "weighted": {"range": [0, 34], "max": 12, "sub": [
-         {"range": [18, 20], "max": 2}, {"range": [22, 24], "max": 2}
-      ]},
+      "weighted": [{"sub": [
+         {"range": [0, 17]}, {"range": [18, 20], "max": 2}, {"range": [21, 21]},
+         {"range": [22, 24], "max": 2}, {"range": [25, 34]}
+      ], "max": 12}],
       "max": 22,
       "full": 1300,
       "toeic": 100
@@ -119,12 +121,14 @@
          "GA15211", "FA01811", "FCB1201", "FCB1241", "FCB1271", "FCB1301", "FCB1341", "FCB1371",
          "EB00001", "EE11151", "EE11161", "EE11251", "EE11261", "FE11171", "FE11181", "FE11191"
       ],
-      "required": [{"range": [0, 9], "min": 6, "sub": [
-         {"range": [2, 4], "max": 2}, {"range": [6, 8], "max": 2}
-      ]}, {"range": [10, 15], "min": 2}],
-      "weighted": {"range": [0, 23], "max": 18, "weight": 1, "sub": [
-         {"range": [2, 4], "max": 2}, {"range": [6, 8], "max": 2}
-      ]},
+      "required": [{"sub": [
+         {"range": [0, 1]}, {"range": [2, 4], "max": 2}, {"range": [5, 5]},
+         {"range": [6, 8], "max": 2}, {"range": [9, 9]}
+      ], "min": 6}, {"range": [10, 15], "min": 2}],
+      "weighted": [{"sub": [
+         {"range": [0, 1]}, {"range": [2, 4], "max": 2}, {"range": [5, 5]},
+         {"range": [6, 8], "max": 2}, {"range": [9, 23]}
+      ], "max": 18, "weight": 1}],
       "max": 24,
       "full": 1860,
       "toeic": 100
@@ -137,15 +141,17 @@
          "EB00001", "EB11131", "EB11221", "EB11311", "EB11721", "EB11811", "FE11171", "FE11181",
          "FE11191"
       ],
-      "required": [{"range": [0, 5], "min": 4}, {"range": [6, 15], "min": 4, "sub": [
-         {"range": [8, 10], "max": 2}, {"range": [12, 14], "max": 2}
-      ]}],
-      "weighted": {"range": [0, 24], "max": 18, "sub": [
-         {"range": [0, 15], "weight": 2, "sub": [
-            {"range": [8, 10], "max": 2}, {"range": [12, 14], "max": 2}
-         ]},
+      "required": [{"range": [0, 5], "min": 4}, {"sub": [
+         {"range": [6, 7]}, {"range": [8, 10], "max": 2}, {"range": [11, 11]},
+         {"range": [12, 14], "max": 2}, {"range": [15, 15]}
+      ], "min": 4}],
+      "weighted": [{"sub": [
+         {"sub": [
+            {"range": [0, 7]}, {"range": [8, 10], "max": 2}, {"range": [11, 11]},
+            {"range": [12, 14], "max": 2}, {"range": [15, 15]}
+         ], "weight": 2},
          {"range": [16, 24], "weight": 1}
-      ]},
+      ], "max": 18}],
       "max": 24,
       "full": 3260,
       "toeic": 100
@@ -157,14 +163,17 @@
          "FCB1371", "FA01311", "FA01411", "GA15311", "FA01511", "FA01611", "FA01711", "GA15211",
          "FA01811", "EB00001", "EE11151", "EE11161", "EE11251", "EE11261", "FA01111", "FA01211"
       ],
-      "required": [{"range": [0, 23], "min": 8, "sub": [{"range": [0, 2], "min": 1},
-         {"range": [9, 11], "max": 2}, {"range": [13, 15], "max": 2},
+      "required": [{"sub": [
+         {"range": [0, 2], "min": 1}, {"range": [3, 8]},
+         {"range": [9, 11], "max": 2}, {"range": [12, 12]},
+         {"range": [13, 15], "max": 2}, {"range": [16, 16]},
          {"range": [17, 23], "max": 4}
-      ]}],
-      "weighted": {"range": [0, 23], "max": 18, "weight": 1, "sub": [
-         {"range": [9, 11], "max": 2}, {"range": [13, 15], "max": 2},
+      ], "min": 8}],
+      "weighted": [{"sub": [
+         {"range": [0, 8]}, {"range": [9, 11], "max": 2}, {"range": [12, 12]},
+         {"range": [13, 15], "max": 2}, {"range": [16, 16]},
          {"range": [17, 23], "max": 4}
-      ]},
+      ], "max": 18, "weight": 1}],
       "max": 24,
       "full": 1860,
       "toeic": 100
@@ -176,15 +185,17 @@
          "FCB1301", "FCB1341", "FCB1371", "FA01311", "FA01411", "GA15311", "FA01511", "FA01611",
          "FA01711", "GA15211", "FA01811", 2
       ],
-      "required": [{"range": [0, 18], "min": 8, "sub": [
-         {"range": [11, 13], "max": 2}, {"range": [15, 17], "max": 2}
-      ]}],
-      "weighted": {"range": [0, 19], "weight": 1, "sub": [
-         {"range": [0, 18], "max": 17, "sub": [
-            {"range": [11, 13], "max": 2}, {"range": [15, 17], "max": 2}
-         ]},
+      "required": [{"sub": [
+         {"range": [0, 10]}, {"range": [11, 13], "max": 2}, {"range": [14, 14]},
+         {"range": [15, 17], "max": 2}
+      ], "min": 8}],
+      "weighted": [{"sub": [
+         {"sub": [
+            {"range": [0, 10]}, {"range": [11, 13], "max": 2}, {"range": [14, 14]},
+            {"range": [15, 17], "max": 2}, {"range": [18, 18]}
+         ], "max": 17},
          {"range": [19, 19], "max": 1}
-      ]},
+      ], "weight": 1}],
       "max": 24,
       "full": 1860,
       "toeic": 100
@@ -195,13 +206,14 @@
          "FA01111", "FA01211", "FCB1201", "FCB1241", "FCB1271", "FCB1301", "FCB1341", "FCB1371",
          "FA01311", "FA01411", "GA15311", "FA01511", "FA01611", "FA01711", "GA15211", "FA01811", 1
       ],
-      "required": [{"range": [0, 15], "min": 8, "sub": [
-         {"range": [8, 10], "max": 2}, {"range": [12, 14], "max": 2}
-      ]}],
-      "weighted": {"range": [0, 16], "max": 18, "weight": 1, "sub": [
-         {"range": [8, 10], "max": 2}, {"range": [12, 14], "max": 2},
-         {"range": [16, 16], "max": 4}
-      ]},
+      "required": [{"sub": [
+         {"range": [0, 7]}, {"range": [8, 10], "max": 2}, {"range": [11, 11]},
+         {"range": [12, 14], "max": 2}, {"range": [15, 15]}
+      ], "min": 8}],
+      "weighted": [{"sub": [
+         {"range": [0, 7]}, {"range": [8, 10], "max": 2}, {"range": [11, 11]},
+         {"range": [12, 14], "max": 2}, {"range": [15, 15]}, {"range": [16, 16], "max": 4}
+      ], "max": 18, "weight": 1}],
       "max": 24,
       "full": 1860,
       "toeic": 100
@@ -212,12 +224,14 @@
          "FA01111", "FA01211", "FA01311", "FA01411", "GA15311", "FA01511", "FA01611", "FA01711",
          "GA15211", "FA01811", "FH61111", "FH61121", "FH61131", "FH61141", "FH61151", "FH61161"
       ],
-      "required": [{"range": [0, 9], "min": 2, "sub": [
-         {"range": [2, 4], "max": 2}, {"range": [6, 8], "max": 2}
-      ]}],
-      "weighted": {"range": [0, 15], "max": 3, "weight": 1, "sub": [
-         {"range": [2, 4], "max": 2}, {"range": [6, 8], "max": 2}
-      ]},
+      "required": [{"sub": [
+         {"range": [0, 1]}, {"range": [2, 4], "max": 2}, {"range": [5, 5]},
+         {"range": [6, 8], "max": 2}, {"range": [9, 9]}
+      ], "min": 2}],
+      "weighted": [{"sub": [
+         {"range": [0, 1]}, {"range": [2, 4], "max": 2}, {"range": [5, 5]},
+         {"range": [6, 8], "max": 2}, {"range": [9, 15]}
+      ], "max": 3, "weight": 1}],
       "max": 24,
       "full": 510,
       "toeic": 50
@@ -229,13 +243,13 @@
          "GA14301", "GA15111", "GA15311", "FA01311", "FA01411", "GA15211", "FA01611", "FA01711",
          "GA18212", "FH60474"
       ],
-      "weighted": {"range": [0, 17], "weight": 1, "sub": [
+      "weighted": [{"sub": [
          {"range": [0, 8], "max": 2},
-         {"range": [9, 17], "max": 8, "sub": [
-            {"range": [10, 12], "max": 2}, {"range": [13, 15], "max": 2},
+         {"sub": [
+            {"range": [9, 9]}, {"range": [10, 12], "max": 2}, {"range": [13, 15], "max": 2},
             {"range": [16, 17], "max": 2}
-         ]}
-      ]},
+         ], "max": 8}
+      ], "weight": 1}],
       "max": 20,
       "full": 1100
    },
@@ -259,11 +273,11 @@
    },
    {
       "name": "医学類",
-      "list": [-1, -2, -3, -4, -5, -6, "HB21211", "HB21221", "FCB1201", "FCB1301", "FE11181", "FE11191", 8],
-      "required": [{"range": [0, 11]}, {"range": [12, 12], "min": 1}],
-      "weighted": {"range": [6, 11], "max": 8, "sub": [
-         {"range": [6, 7], "weight": 2}, {"range": [8, 11], "weight": 1}
-      ]},
+      "list": [64, 128, 256, 512, 1024, "HB21211", "HB21221", "FCB1201", "FCB1301", "FE11181", "FE11191", 8],
+      "required": [{"range": [0, 4], "min": 11}, {"range": [5, 10], "min": 8}, {"range": [11, 11], "min": 1}],
+      "weighted": [{"sub": [
+         {"range": [5, 6], "weight": 2}, {"range": [7, 10], "weight": 1}
+      ], "max": 8}, {"range": [11, 11]}],
       "max": 24,
       "full": 1360,
       "toeic": 200,
@@ -271,22 +285,22 @@
    },
    {
       "name": "看護学類",
-      "list": [-1, -2, -3, -4, -5, -6, "HC30071", "HC21071", "HC30141", "HC34001", "HC36191", 4],
-      "required": [{"range": [0, 0], "min": 2}, {"range": [1, 10]}],
-      "weighted": {"range": [7, 11], "weight": 1, "sub": [
-         {"range": [7, 10], "max": 6}, {"range": [11, 11], "max": 4}
-      ]},
+      "list": [64, 128, 256, 512, 1024, "HC30071", "HC21071", "HC30141", "HC34001", "HC36191", 4],
+      "required": [{"range": [0, 0], "min": 2}, {"range": [1, 4], "min": 7}, {"range": [5, 9], "min": 7}],
+      "weighted": [{"range": [5, 5]}, {"sub": [
+         {"range": [6, 9], "max": 6}, {"range": [10, 10], "max": 4}
+      ], "weight": 1}],
       "max": 23,
       "full": 1130,
       "other": ["面接", 100]
    },
    {
       "name": "医療科学類",
-      "list": [-1, -2, -3, -4, -5, -6, "HC21071", "HC21081", "HB21211", "HB21221", "HE35071", 2],
-      "required": [{"range": [0, 5]}],
-      "weighted": {"range": [6, 11], "max": 8, "weight": 1, "sub": [
-         {"range": [11, 11], "max": 6}
-      ]},
+      "list": [64, 128, 256, 512, 1024, "HC21071", "HC21081", "HB21211", "HB21221", "HE35071", 2],
+      "required": [{"range": [0, 4], "min": 11}],
+      "weighted": [{"sub": [
+         {"range": [5, 9]}, {"range": [10, 10], "max": 6}
+      ], "max": 8, "weight": 1}],
       "max": 20,
       "full": 920,
       "toeic": 200
@@ -301,7 +315,7 @@
          "YAZ1211", "YAZ1221", "YAZ1311", "YAZ1321", "YAZ1411", "YAZ1421"
       ],
       "required": [{"range": [0, 37], "min": 4}],
-      "weighted": {"range": [0, 37], "max": 4},
+      "weighted": [{"range": [0, 37], "max": 4}],
       "max": 24,
       "full": 600
    }
