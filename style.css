@@ -6,6 +6,7 @@
    --tab-hover-bg: #dddddd;
    --tab-btn-bg: #888888;
    --page-bg: #eeeeee;
+   --page-txt: #111111;
 }
 
 body {
@@ -15,33 +16,26 @@ body {
    height: 100vh;
    display: grid;
    grid-template-rows: auto 1fr auto;
+   background-color: var(--page-bg);
+   color: var(--page-txt);
 }
 
 header {
    grid-row: 1;
-   display: grid;
-   grid-template-columns: 1fr auto;
    background-image: var(--header-bg);
    color: var(--header-txt);
 }
 
-header > h1 {
+h1 {
    margin: 0.2rem 0;
+   padding-left: 1rem;
    text-align: center;
-   grid-column: 1;
 }
 
-header > div {
-   grid-column: 2;
-   align-self: center;
-   padding: 0 1rem;
-}
-
-#version {
-   font: inherit;
-   border: none;
-   color: inherit;
-   background-color: inherit;
+h1 > span {
+   position: static;
+   font: initial;
+   padding-left: 1rem;
 }
 
 footer {
@@ -107,5 +101,4 @@ main {
 #tab-page {
    grid-row: 2;
    padding: 1rem;
-   background-color: var(--page-bg);
 }
