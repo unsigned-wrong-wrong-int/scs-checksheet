@@ -14,7 +14,7 @@ const Grade = class {
    constructor(year, id, subject) {
       this.#year = year;
       this.#id = id;
-      this.#score = null;
+      this.#score = undefined;
       this.#subject = subject;
    }
 
@@ -104,7 +104,57 @@ const GradeMap = class {
       }
    }
 
-   #take(result, set, flag = 0) {
+   clone() {
+      return new Map(this.#data);
+   }
+
+   collect(list) {
+      const map = new Map(this.#data);
+   }
+};
+
+const ListItem = class {
+   #code;
+   #passed;
+   #taking;
+   #grades;
+
+   constructor(code) {
+      this.#code = code;
+      this.#clear();
+   }
+
+   get code() {
+      return typeof this.#code === "string" ? this.#code : undefined;
+   }
+
+   get name() {
+      return (typeof this.#code === "string" ? subjects[2023] : categories)[this.#code][0];
+   }
+
+   get credits() {
+      return (typeof this.#code === "string" ? subjects[2023] : categories)[this.#code][1];
+   }
+
+   get passed() {
+      return this.#passed;
+   }
+
+   get taking() {
+      return this.#taking;
+   }
+
+   get grades() {
+      return this.#grades;
+   }
+
+   #clear() {
+      this.#passed = 0;
+      this.#taking = 0;
+      this.#grades = [];
+   }
+
+   #add(set, flag = 0) {
       let passed = 0, taking = 0, max;
    loop:
       for (const grade of set) {
@@ -126,31 +176,30 @@ const GradeMap = class {
          }
       }
       if (passed || taking || max) {
-         result.passed += passed;
-         result.taking += taking;
-         result.grades.push(max);
+         this.#passed += passed;
+         this.#taking += taking;
+         this.#grades.push(max);
          return true;
       }
       return false;
    }
 
-   collect(list) {
-      const map = new Map(this.#data);
-      return list.map(x => {
-         const result = {passed: 0, taking: 0, grades: []};
-         if (typeof x === "number") {
+   static collect(list, gradeMap) {
+      const map = gradeMap.clone();
+      for (const item of list) {
+         item.#clear();
+         if (typeof item.#code === "number") {
             for (const [code, set] of map) {
-               if (this.#take(result, set, x)) {
+               if (item.#add(set, 1 << item.#code)) {
                   map.delete(code);
                }
             }
-         } else if (map.has(x)) {
-            if (this.#take(result, map.get(x))) {
+         } else if (map.has(item.#code)) {
+            if (item.#add(map.get(item.#code))) {
                map.delete(code);
             }
          }
-         return result;
-      });
+      }
    }
 };
 
@@ -311,5 +360,103 @@ const Calc = class {
       this.max(max, {push() {}});
       return this.selected.reduce((sum, item) =>
          sum + item.weight * item.credits * item.grade.score, 0);
+   }
+};
+
+export
+const Toeic = class {
+   #score;
+
+   constructor() {
+      this.#score = undefined;
+   }
+
+   set score(value) {
+      if (value === undefined || Number.isInteger(value / 5) && 10 <= value && value <= 990) {
+         this.#score = value;
+      }
+   }
+
+   get score() {
+      return this.#score;
+   }
+};
+
+// TOEIC スコア 10 を 0 点に、800 以上を満点に換算
+const toeicScore = (scale, score) => {
+   if (!scale) {
+      return;
+   }
+   if (score === undefined) {
+      return 0;
+   }
+   if (score >= 800) {
+      return scale;
+   }
+   return Math.ceil(scale * (score - 10) * 10 / 79) / 100;
+};
+
+export
+const Division = class {
+   #index;
+   #data;
+   #list;
+   #selected;
+   #result;
+   #allotment;
+
+   static all = tables.map((data, i) => new this(i, data));
+
+   constructor(index, data) {
+      this.#index = index;
+      this.#data = data;
+      this.#list = data.list.map(code => new ListItem(code));
+      this.#allotment = {score: data.full, toeic: data.toeic, other: data.other};
+   }
+
+   get index() {
+      return this.#index;
+   }
+
+   get name() {
+      return this.#data.name;
+   }
+
+   get required() {
+      return this.#data.required;
+   }
+
+   get weighted() {
+      return this.#data.weighted;
+   }
+
+   get max() {
+      return this.#data.max;
+   }
+
+   get list() {
+      return this.#list;
+   }
+
+   get selected() {
+      return this.#selected;
+   }
+
+   get result() {
+      return this.#result;
+   }
+
+   get allotment() {
+      return this.#allotment;
+   }
+
+   eval(gradeMap, toeic) {
+      ListItem.collect(this.#list, gradeMap);
+      const check = new Check;
+      const status = check.run(this.#list, this.#data.required);
+      const calc = new Calc;
+      const score = calc.run(this.#list, this.#data.weighted, this.#data.max);
+      this.#selected = calc.selected;
+      this.#result = {status, score, toeic: toeicScore(toeic)};
    }
 };
