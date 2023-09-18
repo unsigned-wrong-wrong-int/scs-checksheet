@@ -1,5 +1,15 @@
 const {subjects, tables, categories} =
-   await (await fetch(new URL("./data/data.json", import.meta.url))).json();
+   await (await fetch(new URL("../data/data.json", import.meta.url))).json();
+
+const resolveRange = rule => {
+   rule.sub?.forEach(resolveRange);
+   rule.range ??= [rule.sub[0].range[0], rule.sub[rule.sub.length - 1].range[1]];
+};
+
+for (const division of Object.values(tables)) {
+   division.required?.forEach(resolveRange);
+   division.weighted?.forEach(resolveRange);
+}
 
 export
 const STATUS_TAKING = undefined, STATUS_FAILED = 0, STATUS_PASSED = 60;
@@ -129,11 +139,17 @@ const ListItem = class {
    }
 
    get name() {
-      return (typeof this.#code === "string" ? subjects[2023] : categories)[this.#code][0];
+      if (typeof this.#code === "string") {
+         return (subjects[2023][this.#code] ?? subjects[2022][this.#code])[0];
+      }
+      return categories[this.#code][0];
    }
 
    get credits() {
-      return (typeof this.#code === "string" ? subjects[2023] : categories)[this.#code][1];
+      if (typeof this.#code === "string") {
+         return (subjects[2023][this.#code] ?? subjects[2022][this.#code])[1];
+      }
+      return categories[this.#code][1];
    }
 
    get passed() {
