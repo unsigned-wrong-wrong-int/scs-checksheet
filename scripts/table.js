@@ -258,6 +258,14 @@ const Table = class {
       this.data = data;
       this.elem = table;
    }
+
+   update() {
+      const newRows = this.updateRows();
+      if (newRows === this.rows) return;
+      const tbody = this.elem.children[1];
+      tbody.textContent = "";
+      tbody.append(...newRows);
+   }
 };
 
 const CheckSheet = class extends Table {
@@ -278,11 +286,45 @@ const CheckSheet = class extends Table {
       return rows;
    }
 
-   update() {
+   updateRows() {
       this.data.list.forEach((item, index) => {
          this.rows[index].passed(item.passed);
          this.rows[index].taking(item.taking);
       });
+      return this.rows;
+   }
+};
+
+const ScoreList = class extends Table {
+   static head(_) {
+      return new Row("th")
+         .cell("科目番号").cell("科目名").cell("重み").cell("単位").cell("評点");
+   }
+
+   static rows(division) {
+      const rows = division.selected.map(item => new Row()
+         .cell(item.grade.id).cell(item.grade.name));
+      let weight, index;
+      division.selected.forEach((item, i) => {
+         if (item.weight !== weight) {
+            if (weight) {
+               rows[index].cell(weight, {rowSpan: i - index});
+            }
+            weight = item.weight;
+            index = i;
+         }
+      });
+      if (weight) {
+         rows[index].cell(weight, {rowSpan: rows.length - index});
+      }
+      division.selected.forEach((item, i) => {
+         rows[i].cell(item.credits).cell(item.grade.score);
+      });
+      return rows;
+   }
+
+   updateRows() {
+      return ScoreList.rows(this.data);
    }
 };
 
