@@ -15,6 +15,6 @@ listPage.append(...Division.all.map((division, i) => {
 }));
 
 const tabs = [new PinnedTab("input", inputPage), new PinnedTab("list", listPage)];
-Division.all.forEach((division, i) => {
+Division.all().forEach((division, i) => {
    tabs.push(new Tab(i, division.name, new DetailsPage(division).contents));
 });

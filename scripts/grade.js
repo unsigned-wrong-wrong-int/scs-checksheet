@@ -421,7 +421,9 @@ const Division = class {
    #result;
    #allotment;
 
-   static all = tables.map((data, i) => new this(i, data));
+   static all() {
+      return tables.map((data, i) => new this(i, data));
+   }
 
    constructor(index, data) {
       this.#index = index;
