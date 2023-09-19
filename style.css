@@ -104,7 +104,7 @@ main {
 }
 
 table {
-   /* border-collapse: collapse; */
+   border-collapse: collapse;
    border: 2px solid black;
 }
 

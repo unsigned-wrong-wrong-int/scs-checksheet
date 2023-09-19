@@ -46,16 +46,25 @@ const Column = class {
 
    end(range) {
       if (this.index === range[0]) return false;
-      this.pad(1, range[1] + 1);
+      this.pad(range[1] + 1);
       return true;
    }
 
-   pad(colSpan, index = this.col.length) {
+   pad(index) {
+      if (index <= this.index) return;
+      const blank = document.createElement("td");
+      this.col[this.index] = blank;
+      blank.rowSpan = index - this.index;
+      this.index = index;
+   }
+
+   blank(colSpan, index = this.col.length) {
       if (index <= this.index) return;
       const blank = document.createElement("td");
       this.col[this.index] = blank;
       blank.rowSpan = index - this.index;
       blank.colSpan = colSpan;
+      blank.textContent = "―";
       this.index = index;
    }
 
@@ -102,15 +111,15 @@ const Column = class {
 const prependRequired = (rows, rules) => {
    const col = new Column(rows.length), subCol = new Column(rows.length);
    for (const rule of rules ?? []) {
-      col.pad(2, rule.range[0]);
+      col.blank(2, rule.range[0]);
       if (rule.sub) {
          subCol.begin(rule.range);
          for (const span of rule.sub) {
             if (span.max) {
-               subCol.pad(1, span.range[0]);
+               subCol.pad(span.range[0]);
                subCol.cell(1, span.range, `${span.max}単位まで`);
             } else if (span.min) {
-               subCol.pad(1, span.range[0]);
+               subCol.pad(span.range[0]);
                subCol.cell(1, span.range, `${span.min}単位`);
             }
          }
@@ -120,7 +129,7 @@ const prependRequired = (rows, rules) => {
          col.cell(2, rule.range, `${rule.min}単位`);
       }
    }
-   col.pad(2);
+   col.blank(2);
    subCol.prependTo(rows);
    col.prependTo(rows);
 };
@@ -155,8 +164,8 @@ const appendWeighted = (rows, rules) => {
    const wCol = new Column(rows.length);
    const col = new Column(rows.length), subCol = new Column(rows.length);
    for (const rule of rules ?? []) {
-      wCol.pad(1, rule.range[0]);
-      subCol.pad(2, rule.range[0]);
+      wCol.blank(1, rule.range[0]);
+      subCol.blank(2, rule.range[0]);
       if (rule.max) {
          if (rule.weight) {
             if (rule.sub) {
@@ -165,7 +174,7 @@ const appendWeighted = (rows, rules) => {
                   if (span.weight) {
                      wCol.cell(1, span.range, `${span.max}単位まで${span.weight}`);
                   } else if (span.max) {
-                     subCol.pad(1, span.range[0]);
+                     subCol.pad(span.range[0]);
                      subCol.cell(1, span.range, `${span.max}単位まで`);
                   }
                }
@@ -176,13 +185,12 @@ const appendWeighted = (rows, rules) => {
             }
             wCol.cell(1, rule.range, rule.weight);
          } else {
-            // const hasSub = rule.sub.some(({sub}) => sub);
             subCol.begin(rule.range);
             for (const span of rule.sub) {
                if (span.sub) {
                   for (const sub of span.sub) {
                      if (sub.max) {
-                        subCol.pad(1, sub.range[0]);
+                        subCol.pad(sub.range[0]);
                         subCol.cell(1, sub.range, `${sub.max}単位まで`);
                      }
                   }
@@ -201,7 +209,7 @@ const appendWeighted = (rows, rules) => {
                subCol.begin(span.range);
                for (const sub of span.sub) {
                   if (sub.max) {
-                     subCol.pad(1, sub.range[0]);
+                     subCol.pad(sub.range[0]);
                      subCol.cell(1, sub.range, `${sub.max}単位まで`);
                   }
                }
@@ -214,8 +222,8 @@ const appendWeighted = (rows, rules) => {
          wCol.cell(1, rule.range, rule.weight);
       }
    }
-   wCol.pad(1);
-   subCol.pad(2);
+   wCol.blank(1);
+   subCol.blank(2);
    wCol.appendTo(rows);
    subCol.appendTo(rows);
    col.appendTo(rows);
