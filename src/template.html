@@ -44,7 +44,18 @@
                         <th class="subj-status-input">修得状況</th>
                      </tr>
                   </thead>
-                  <tbody></tbody>
+                  <tbody id="input-body-c">
+                     <!--${subjects.common.map(([name, credits, ], id) => `-->
+                     <tr>
+                        <td class="subj-name">${name}</td>
+                        <td class="subj-credits">${credits}</td>
+                        <td class="subj-status-input">
+                           <label><input type="checkbox">履修中</label>
+                           <label><input type="checkbox">修得</label>
+                        </td>
+                     </tr>
+                     <!--`).join("")}-->
+                  </tbody>
                </table>
                <h2>成績点計算対象科目</h2>
                <ul>
@@ -70,22 +81,31 @@
                   </thead>
                   <tbody>
                      <tr>
-                        <td>
-                           <select>
-                              <option selected>2024</option>
-                              <option>2023</option>
-                           </select>
+                        <td class="subj-year">
+                           <input type="number" min="2023" max="2024" step="1" value="2024" required>
                         </td>
-                        <td>
-                           <input type="text" pattern="[0-9A-Z]{6}">
+                        <td class="subj-id">
+                           <input type="text" pattern="[0-9A-Z]{6}" required>
                         </td>
-                        <td></td>
-                        <td></td>
-                        <td>
+                        <td class="subj-name"></td>
+                        <td class="subj-credits"></td>
+                        <td class="subj-value-input">
                            <input type="number" min="0" max="100" step="1">
                         </td>
-                        <td>
-                           <button>追加</button>
+                        <td class="subj-buttons">
+                           <button class="subj-add">追加</button>
+                        </td>
+                     </tr>
+                     <tr hidden>
+                        <td class="subj-year"></td>
+                        <td class="subj-id"></td>
+                        <td class="subj-name"></td>
+                        <td class="subj-credits"></td>
+                        <td class="subj-value-input">
+                           <input type="number" min="0" max="100" step="1">
+                        </td>
+                        <td class="subj-buttons">
+                           <button class="subj-delete">削除</button>
                         </td>
                      </tr>
                   </tbody>
@@ -181,11 +201,18 @@
                      <tr>
                         <th>科目番号</th>
                         <th>科目名</th>
-                        <th>修得</th>
                         <th>履修中</th>
+                        <th>修得</th>
                      </tr>
                   </thead>
-                  <tbody></tbody>
+                  <tbody>
+                     <tr hidden>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                     </tr>
+                  </tbody>
                </table>
             </div>
             <div id="score-details" popover>
@@ -199,7 +226,15 @@
                         <th>点数</th>
                      </tr>
                   </thead>
-                  <tbody></tbody>
+                  <tbody>
+                     <tr hidden>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                     </tr>
+                  </tbody>
                </table>
             </div>
          </div>

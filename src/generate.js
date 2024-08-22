@@ -12,6 +12,6 @@ const getSubject = id => {
 };
 
 const template = await(await fetch(new URL("./template.html", import.meta.url))).text();
-const generated = eval("`" + template + "`").replace(/\n *<!---->/g, "");
+const generated = eval("`" + template + "`").replace(/^(?: *<!---->\n| +)/gm, "");
 
 Deno.writeTextFileSync(new URL("../index.html", import.meta.url), generated);
