@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ja">
+   <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <title>移行チェックシート</title>
+      <link rel="stylesheet" type="text/css" href="./style.css">
+      <script type="module" src="./scripts/tabs.js"></script>
+   </head>
+   <body>
+      <header>
+         <h1>移行チェックシート<span id="header-year">${year}年度版</span></h1>
+      </header>
+      <main>
+         <div id="side" tabindex="-1">
+            <div id="tablist" role="tablist" aria-orientation="vertical">
+               <button id="tab-input" class="tab" tabindex="0" role="tab" aria-selected="true" aria-controls="panel-input">
+                  <div class="tab-inner">
+                     <div class="tab-text">成績入力</div>
+                  </div>
+               </button>
+               <!--${partitions.map(({name, abbr, full}, i) => `-->
+               <button id="tab-${i}" class="tab" tabindex="-1" role="tab" aria-selected="false" aria-controls="panel-${i}">
+                  <div class="tab-inner" title="${name}">
+                     <div class="tab-name">${abbr}</div>
+                     <div class="tab-status"></div>
+                     <div class="tab-score"><span class="tab-score-value"></span><span class="tab-score-full">${full}</span></div>
+                  </div>
+               </button>
+               <!--`).join("")}-->
+            </div>
+         </div>
+         <div id="panels">
+            <div id="panel-input" class="panel" tabindex="-1" role="tabpanel" aria-labelledby="tab-input">
+               <h2>必修科目</h2>
+               <ul>
+                  <li>移行要件として修得の有無が問われる科目</li>
+               </ul>
+               <table id="input-table-c">
+                  <thead>
+                     <tr>
+                        <th class="subj-name">科目名</th>
+                        <th class="subj-credits">単位数</th>
+                        <th class="subj-status-input">修得状況</th>
+                     </tr>
+                  </thead>
+                  <tbody></tbody>
+               </table>
+               <h2>成績点計算対象科目</h2>
+               <ul>
+                  <li>重点科目 および 以下のいずれにも該当しない科目<ul>
+                     <li>必修科目 英語、国語、情報</li>
+                     <li>教職等の科目</li>
+                     <li>P/F評価の科目</li>
+                     <li>今年度秋C以降に成績が確定する科目</li>
+                  </ul></li>
+                  <li>点数が開示されていない場合は、A+ 90点、A 80点、B 70点、C 60点、D 0点となる</li>
+                  <li>履修中/履修予定の科目は評定を空欄にして入力</li>
+               </ul>
+               <table id="input-table-s">
+                  <thead>
+                     <tr>
+                        <th>年度</th>
+                        <th>科目番号</th>
+                        <th>科目名</th>
+                        <th>単位数</th>
+                        <th>評点</th>
+                        <th></th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     <tr>
+                        <td>
+                           <select>
+                              <option selected>2024</option>
+                              <option>2023</option>
+                           </select>
+                        </td>
+                        <td>
+                           <input type="text" pattern="[0-9A-Z]{6}">
+                        </td>
+                        <td></td>
+                        <td></td>
+                        <td>
+                           <input type="number" min="0" max="100" step="1">
+                        </td>
+                        <td>
+                           <button>追加</button>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+               <h2>TOEIC IP</h2>
+               <ul>
+                  <li>秋に実施されるTOEIC IPテストのスコア</li>
+                  <li>スコア 10を0点、800以上を満点として算入される</li>
+               </ul>
+               <table id="input-table-t">
+                  <thead>
+                     <tr><th>スコア</th></tr>
+                  </thead>
+                  <tbody>
+                     <tr><td><input id="input-toeic" type="number" min="0" max="990" step="5"></td></tr>
+                  </tbody>
+               </table>
+            </div>
+            <!--${partitions.map(({name, full, toeic, intvw, exam, list, test, sum}, i) => `-->
+            <div id="panel-${i}" class="panel" tabindex="-1" role="tabpanel" aria-labelledby="tab-${i}" hidden>
+               <h2>${name}</h2>
+               <table class="summary-table">
+                  <thead>
+                     <tr>
+                        <th class="summary-status">状況</th>
+                        <th class="summary-score">成績点</th>
+                        <th class="summary-toeic">TOEIC</th>
+                        <!--${intvw ? `-->
+                        <th class="summary-intv">面接</th>
+                        <!--` : ""}-->
+                        <!--${exam ? `-->
+                        <th class="summary-exam">試験</th>
+                        <!--` : ""}-->
+                     </tr>
+                  </thead>
+                  <tbody>
+                     <tr>
+                        <td class="summary-status"></td>
+                        <td class="summary-score"><span></span><span>${full}</span></td>
+                        <!--${toeic ? `-->
+                        <td class="summary-toeic"><span></span><span>${toeic}</span></td>
+                        <!--` : `-->
+                        <td class="summary-toeic">―</td>
+                        <!--`}-->
+                        <!--${intvw ? `-->
+                        <td class="summary-intvw">${intvw}</td>
+                        <!--` : ""}-->
+                        <!--${exam ? `-->
+                        <td class="summary-exam">${exam}</td>
+                        <!--` : ""}-->
+                     </tr>
+                  </tbody>
+               </table>
+               <table class="main-table">
+                  <thead>
+                     <tr>
+                        <th colspan="${test.length}">移行要件</th>
+                        <th>科目番号</th>
+                        <th>科目名</th>
+                        <th>時期</th>
+                        <th>単位数</th>
+                        <th colspan="${sum.length}">重み</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     <!--${list.map((id, j) => `-->
+                     <tr>
+                        <!--${test.flatMap(step => step.filter(([[k, l], ]) => j === k).map(([[k, l], f]) => `-->
+                        <td rowspan="${l - k + 1}">${f.min ? `${f.min}単位` : f.max ? `${f.max}単位まで` : ""}</td>
+                        <!--`)).reverse().join("")}-->
+                        <!--${(test[0].length === 0 ? j === 0 : j === test[0].at(-1)[0][1] + 1) ? `-->
+                        <td rowspan="${list.length - j}" colspan="${test.length}">―</td>
+                        <!--` : ""}-->
+                        <td>${typeof id === "string" ? id : "―"}</td>
+                        <td>${getSubject(id)[0]}</td>
+                        <td>${"―"}</td>
+                        <td>${getSubject(id)[1] ?? "―"}</td>
+                        <!--${j === 0 && sum[0][0][0][0] > 0 ? `-->
+                        <td rowspan="${sum[0][0][0][0]}" colspan="${sum.length}">―</td>
+                        <!--` : ""}-->
+                        <!--${sum.flatMap(step => step.filter(([[k, l], ]) => j === k).map(([[k, l], f]) => `-->
+                        <td rowspan="${l - k + 1}">${f.max ? `${f.max}単位<wbr>まで<wbr>` : ""}${f.weight ? f.weight.toFixed(1) : ""}</td>
+                        <!--`)).join("")}-->
+                     </tr>
+                     <!--`).join("")}-->
+                  </tbody>
+               </table>
+            </div>
+            <!--`).join("")}-->
+            <div id="status-details" popover>
+               <table>
+                  <thead>
+                     <tr>
+                        <th>科目番号</th>
+                        <th>科目名</th>
+                        <th>修得</th>
+                        <th>履修中</th>
+                     </tr>
+                  </thead>
+                  <tbody></tbody>
+               </table>
+            </div>
+            <div id="score-details" popover>
+               <table>
+                  <thead>
+                     <tr>
+                        <th>科目番号</th>
+                        <th>科目名</th>
+                        <th>単位数</th>
+                        <th>重み</th>
+                        <th>点数</th>
+                     </tr>
+                  </thead>
+                  <tbody></tbody>
+               </table>
+            </div>
+         </div>
+      </main>
+      <footer>
+         筑波大学総合学域群生用の非公式ツールです。
+         ソースコード: <a href="${url}">${url}</a>
+      </footer>
+   </body>
+</html>

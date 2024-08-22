@@ -1,38 +1,42 @@
 :root {
    --header-bg: linear-gradient(to right, #552288, #dd2277);
    --header-txt: #eeeeee;
-   --tab-active-bg: #eeeeee;
-   --tab-bg: #bbbbbb;
-   --tab-hover-bg: #dddddd;
-   --tab-btn-bg: #888888;
-   --page-bg: #eeeeee;
+   --tab-border: #666666;
+   --tab-hover-border: #333333;
+   --tab-active-bg: linear-gradient(#eeeeee, #dddddd);
+   --tab-bg: #dddddd;
+   --tab-hover-bg: linear-gradient(#eeeeee, #dddddd);
+   --tab-active-marker: #55cc22;
+   --tab-marker: #ccaadd;
+   --page-bg: #f4f4f4;
    --page-txt: #111111;
+   --table-border: #333333;
 }
 
 body {
    margin: 0;
    padding: 0;
-   width: 100vw;
-   height: 100vh;
+   width: 100dvw;
+   height: 100dvh;
    display: grid;
-   grid-template-rows: auto 1fr auto;
-   background-color: var(--page-bg);
-   color: var(--page-txt);
+   grid-template-rows: min-content 1fr min-content;
+   grid-template-columns: min-content 1fr;
+   background: var(--header-bg);
+   color: var(--header-txt);
 }
 
 header {
    grid-row: 1;
-   background-image: var(--header-bg);
-   color: var(--header-txt);
+   grid-column: 1 / 3;
 }
 
-h1 {
+header>h1 {
    margin: 0.2rem 0;
    padding-left: 1rem;
    text-align: center;
 }
 
-h1 > span {
+#header-year {
    position: static;
    font: initial;
    padding-left: 1rem;
@@ -40,74 +44,126 @@ h1 > span {
 
 footer {
    grid-row: 3;
+   grid-column: 1 / 3;
    padding: 0.2rem 0;
    text-align: center;
-   background-image: var(--header-bg);
-   color: var(--header-txt);
 }
 
-footer > a {
+footer>a {
    text-decoration: underline;
    color: inherit;
 }
 
 main {
    grid-row: 2;
-   display: grid;
-   grid-template-rows: auto 1fr;
-}
-
-#tab-bar {
-   grid-row: 1;
-   display: flex;
-   overflow-x: auto;
-   position: sticky;
-   top: 0;
-   background-image: var(--header-bg);
-}
-
-#tab-bar > input[type="radio"] {
-   display: none;
-}
-
-#tab-bar > label {
-   margin: 0 0.2rem;
-   padding: 0.4rem 0.5rem;
-   flex-shrink: 0;
-   border-radius: 0.4rem 0.4rem 0 0;
-   font: inherit;
-   background-color: var(--tab-bg);
-   &:hover {
-      background-color: var(--tab-hover-bg);
-   }
-}
-
-#tab-bar > input[type="radio"]:checked + label {
-   background-color: var(--tab-active-bg);
-}
-
-#tab-bar > label > button {
-   margin-left: 0.2rem;
-   font: inherit;
+   grid-column: 1 / 3;
    padding: 0;
-   font-size: 0.8rem;
-   border: none;
-   background-color: inherit;
-   &:hover {
-      background-color: var(--tab-btn-bg);
-   }
+   margin: 0 4px;
+   width: 100%;
+   height: 100%;
+   display: grid;
+   grid-template-rows: subgrid;
+   grid-template-columns: subgrid;
+   border: 1px solid var(--tab-border);
 }
 
-#tab-page {
+#side {
    grid-row: 2;
+   grid-column: 1;
+   padding: 0;
+   margin: 0;
+   overflow: auto;
+}
+
+#panels {
+   grid-row: 2;
+   grid-column: 2;
    padding: 1rem;
+   margin: 0;
+   overflow: auto;
+   background-color: var(--page-bg);
+   color: var(--page-txt);
+}
+
+#tablist {
+   margin: 0;
+   padding: 0;
+   width: 16rem;
+}
+
+button.tab {
+   font: inherit;
+   text-align: inherit;
+   color: var(--page-txt);
+   background: var(--tab-bg);
+   border: 1px solid var(--tab-border);
+   padding: 0;
+   width: 100%;
+   margin: 0;
+   cursor: pointer;
+}
+
+button.tab[aria-selected="true"] {
+   background: var(--page-bg);
+   border-right: none;
+   font-weight: bold;
+}
+
+button.tab:focus-visible {
+   border-color: #4488ff;
+}
+
+button.tab:hover {
+   border-color: var(--tab-hover-border);
+   background: var(--page-bg);
+}
+
+div.tab-inner {
+   border-inline-start: 8px solid var(--tab-marker);
+   padding: 0.8rem 8px;
+   display: grid;
+   grid-template-columns: 3rem 2rem 1fr;
+}
+
+button.tab[aria-selected="true"]>div.tab-inner {
+   border-inline-start: 8px solid var(--tab-active-marker);
+}
+
+button.tab:focus-visible>div.tab-inner {
+   border-inline-start: 8px solid #4488ff;
+}
+
+div.tab-text {
+   grid-column: 1 / 3;
+}
+
+div.tab-status {
+   text-align: center;
+}
+
+div.tab-score {
+   text-align: right;
+}
+
+span.tab-score-full {
+   font-size: smaller;
+}
+
+span.tab-score-full::before {
+   content: "/";
 }
 
 table {
    border-collapse: collapse;
-   border: 2px solid black;
+   border: 1px solid var(--tab-border);
 }
 
 td, th {
-   border: 1px solid black;
+   border: 1px solid var(--tab-border);
+   padding: 0.2rem;
+}
+
+th {
+   background-color: #885588;
+   color: var(--page-bg);
 }

@@ -1,86 +1,47 @@
-const tabBar = document.getElementById("tab-bar");
-const tabPage = document.getElementById("tab-page");
-let tabList = null;
+const tabList = document.getElementById("tablist");
+const tabs = [...tabList.getElementsByClassName("tab")];
+const panels = document.getElementById("panels");
 
-const TabBase = class {
-   constructor(radio, content) {
-      radio.addEventListener("change", () => this.activate());
-      this.radio = radio;
-      this.content = content;
-   }
+const moveFocus = d => {
+   const prev = tabs.findIndex(t => t.getAttribute("tabindex") === String(0));
+   tabs[prev].setAttribute("tabindex", -1);
 
-   activate() {
-      if (tabList?.tab !== this) {
-         for (let node = tabList; node !== null; node = node.next) {
-            if (node.next?.tab === this) {
-               node.next = node.next.next;
-               break;
-            }
-         }
-         tabList = {tab: this, next: tabList};
-      }
-      tabPage.firstElementChild.replaceWith(this.content);
+   let next;
+   if (d > 0) {
+      next = prev + 1 === tabs.length ? 0 : prev + 1;
+   } else {
+      next = prev === 0 ? tabs.length - 1 : prev - 1;
    }
+   tabs[next].setAttribute("tabindex", 0);
+   tabs[next].focus();
 };
 
-export
-const PinnedTab = class extends TabBase {
-   constructor(id, content) {
-      const radio = document.getElementById("tab-" + id);
-      super(radio, content);
-      radio.click();
-   }
+const select = newTab => {
+   const tab = tabs.find(t => t.getAttribute("aria-selected") === String(true));
+   const panel = panels.querySelector(`#${tab.getAttribute("aria-controls")}`);
+   tab.setAttribute("aria-selected", false);
+   panel.setAttribute("hidden", true);
+
+   const newPanel = panels.querySelector(`#${newTab.getAttribute("aria-controls")}`);
+   newTab.setAttribute("aria-selected", true);
+   newPanel.removeAttribute("hidden");
 };
 
-export
-const Tab = class extends TabBase {
-   constructor(id, title, content) {
-      const radio = document.createElement("input");
-      radio.type = "radio";
-      radio.name = "tab";
-      radio.id = "tab-" + id;
-      const label = document.createElement("label");
-      label.htmlFor = "tab-" + id;
-      const text = document.createElement("span");
-      text.textContent = title;
-      const close = document.createElement("button");
-      close.textContent = "×";
-      close.addEventListener("click", () => this.close());
-      label.append(text, close);
-      super(radio, content);
-      this.label = label;
+tabList.addEventListener("keydown", e => {
+   switch (e.code) {
+   case "ArrowUp":
+      moveFocus(-1);
+      e.preventDefault();
+      break;
+   case "ArrowDown":
+      moveFocus(1);
+      e.preventDefault();
+      break;
+   default:
+      break;
    }
+});
 
-   open() {
-      if (tabList.tab === this) return;
-      let exists = false;
-      for (let node = tabList; node !== null; node = node.next) {
-         if (node.next?.tab === this) {
-            node.next = node.next.next;
-            exists = true;
-            break;
-         }
-      }
-      if (!exists) {
-         tabBar.append(this.radio, this.label);
-      }
-      this.radio.click();
-   }
-
-   close() {
-      this.radio.checked = false;
-      this.label.remove();
-      this.radio.remove();
-      if (tabList.tab === this) {
-         tabList = tabList.next;
-         tabList.tab.radio.click();
-      } else {
-         for (let node = tabList; node !== null; node = node.next) {
-            if (node.next?.tab === this) {
-               node.next = node.next.next;
-               break;
-            }
-         }
-      }
-   }
-};
+for (const tab of tabs) {
+   tab.addEventListener("click", e => select(e.currentTarget));
+}
