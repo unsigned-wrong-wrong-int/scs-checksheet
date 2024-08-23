@@ -15,17 +15,13 @@
          <div id="side" tabindex="-1">
             <div id="tablist" role="tablist" aria-orientation="vertical">
                <button id="tab-input" class="tab" tabindex="0" role="tab" aria-selected="true" aria-controls="panel-input">
-                  <div class="tab-inner">
-                     <div class="tab-text">成績入力</div>
-                  </div>
+                  <div class="tab-text">成績入力</div>
                </button>
                <!--${partitions.map(({name, abbr, full}, i) => `-->
                <button id="tab-${i}" class="tab" tabindex="-1" role="tab" aria-selected="false" aria-controls="panel-${i}">
-                  <div class="tab-inner" title="${name}">
-                     <div class="tab-name">${abbr}</div>
-                     <div class="tab-status"></div>
-                     <div class="tab-score"><span class="tab-score-value"></span><span class="tab-score-full">${full}</span></div>
-                  </div>
+                  <div class="tab-name">${abbr}</div>
+                  <div class="tab-status"></div>
+                  <div class="tab-score"><span class="tab-score-value"></span><span class="tab-score-full">${full}</span></div>
                </button>
                <!--`).join("")}-->
             </div>

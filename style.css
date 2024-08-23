@@ -64,7 +64,6 @@ main {
    display: grid;
    grid-template-rows: subgrid;
    grid-template-columns: subgrid;
-   border: 1px solid var(--tab-border);
 }
 
 #side {
@@ -96,41 +95,31 @@ button.tab {
    text-align: inherit;
    color: var(--page-txt);
    background: var(--tab-bg);
-   border: 1px solid var(--tab-border);
-   padding: 0;
+   border: none;
+   border-inline-start: 8px solid var(--tab-marker);
+   padding: 0.8rem 8px;
    width: 100%;
-   margin: 0;
+   display: grid;
+   grid-template-columns: 3rem 2rem 1fr;
+   margin: 0 0 4px 0;
    cursor: pointer;
+   box-shadow: inset -1px 0 0 #333333;
 }
 
 button.tab[aria-selected="true"] {
    background: var(--page-bg);
-   border-right: none;
    font-weight: bold;
-}
-
-button.tab:focus-visible {
-   border-color: #4488ff;
-}
-
-button.tab:hover {
-   border-color: var(--tab-hover-border);
-   background: var(--page-bg);
-}
-
-div.tab-inner {
-   border-inline-start: 8px solid var(--tab-marker);
-   padding: 0.8rem 8px;
-   display: grid;
-   grid-template-columns: 3rem 2rem 1fr;
-}
-
-button.tab[aria-selected="true"]>div.tab-inner {
+   box-shadow: none;
    border-inline-start: 8px solid var(--tab-active-marker);
 }
 
-button.tab:focus-visible>div.tab-inner {
-   border-inline-start: 8px solid #4488ff;
+button.tab[aria-selected]:focus-visible {
+   outline: auto;
+   outline-offset: -4px;
+}
+
+button.tab:hover {
+   background: var(--page-bg);
 }
 
 div.tab-text {
