@@ -133,7 +133,7 @@ const RecordList = class {
    constructor() {
       this.#all = [];
       this.#map = new Map();
-      this.#groups = data.categories.map(([flag]) => new ResultGroup(flag));
+      this.#groups = data.categories.map(([, , flag]) => new ResultGroup(flag));
    }
 
    add(record) {
