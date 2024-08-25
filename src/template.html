@@ -18,7 +18,7 @@
                   <div class="tab-text">成績入力</div>
                </button>
                <!--${partitions.map(({name, abbr, full}, i) => `-->
-               <button id="tab-${i}" class="tab" tabindex="-1" role="tab" aria-selected="false" aria-controls="panel-${i}">
+               <button id="tab-${i}" class="tab" title="${name}" tabindex="-1" role="tab" aria-selected="false" aria-controls="panel-${i}">
                   <div class="tab-name">${abbr}</div>
                   <div class="tab-status"></div>
                   <div class="tab-score"><span class="tab-score-value"></span><span class="tab-score-full">${full}</span></div>
