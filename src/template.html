@@ -177,9 +177,9 @@
                         <!--` : `-->
                         <td rowspan="${l - k + 1}" colspan="${test.cols}" class="test-ignore"></td>
                         <!--`).join("")}-->
-                        <td>${typeof id === "string" ? id : "―"}</td>
-                        <td>${getSubject(id)[0]}</td>
-                        <td>${getSubject(id)[1] ?? "―"}</td>
+                        <td class="subj-id">${typeof id === "string" ? id : "―"}</td>
+                        <td class="subj-name">${getSubject(id)[0]}</td>
+                        <td class="subj-credits">${getSubject(id)[1] ?? "―"}</td>
                         <!--${sum[j].map(([k, l, op]) => op === undefined ? `-->
                         <td rowspan="${l - k + 1}" class="sum-blank"></td>
                         <!--` : op.weight ? `-->

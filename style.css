@@ -151,7 +151,7 @@ table {
 td, th {
    border: 1px solid var(--tab-border);
    padding: 0.2rem;
-   background-color: #f4f4ff;
+   background-color: #f6f6ff;
 }
 
 th {
@@ -167,6 +167,20 @@ th:first-child {
 
 th:last-child {
    border-right: 1px solid var(--tab-border);
+}
+
+.subj-id {
+   width: 7rem;
+   text-align: center;
+}
+
+.subj-name {
+   width: 20rem;
+}
+
+.subj-credits {
+   width: 3rem;
+   text-align: center;
 }
 
 .test-blank, .sum-blank {
