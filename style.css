@@ -151,6 +151,7 @@ table {
 td, th {
    border: 1px solid var(--tab-border);
    padding: 0.2rem;
+   background-color: #f4f4ff;
 }
 
 th {
@@ -166,4 +167,30 @@ th:first-child {
 
 th:last-child {
    border-right: 1px solid var(--tab-border);
+}
+
+.test-blank, .sum-blank {
+   border-left: none;
+   border-right: none;
+}
+
+.test-min, .test-max {
+   border-right: none;
+   text-align: center;
+   padding: 0.2rem 0.6rem;
+}
+
+.sum-max {
+   border-left: none;
+   text-align: center;
+   padding: 0.2rem 0.6rem;
+}
+
+.sum-weight {
+   border-right-style: dashed;
+   text-align: center;
+}
+
+.test-ignore, .sum-ignore {
+   background-color: var(--tab-bg);
 }

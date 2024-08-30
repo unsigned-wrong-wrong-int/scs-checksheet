@@ -169,25 +169,25 @@
                      <!--${list.map((id, j) => `-->
                      <tr>
                         <!--${test[j].map(([k, l, op]) => op === undefined ? `-->
-                        <td rowspan="${l - k + 1}"></td>
+                        <td rowspan="${l - k + 1}" class="test-blank"></td>
                         <!--` : op.min ? `-->
-                        <td rowspan="${l - k + 1}">${op.min}単位</td>
+                        <td rowspan="${l - k + 1}" class="test-min">${op.min}単位</td>
                         <!--` : op.max ? `-->
-                        <td rowspan="${l - k + 1}">${op.max}単位まで</td>
+                        <td rowspan="${l - k + 1}" class="test-max">${op.max}単位<br>まで</td>
                         <!--` : `-->
-                        <td rowspan="${l - k + 1}" colspan="${test.cols}">―</td>
+                        <td rowspan="${l - k + 1}" colspan="${test.cols}" class="test-ignore"></td>
                         <!--`).join("")}-->
                         <td>${typeof id === "string" ? id : "―"}</td>
                         <td>${getSubject(id)[0]}</td>
                         <td>${getSubject(id)[1] ?? "―"}</td>
                         <!--${sum[j].map(([k, l, op]) => op === undefined ? `-->
-                        <td rowspan="${l - k + 1}"></td>
+                        <td rowspan="${l - k + 1}" class="sum-blank"></td>
                         <!--` : op.weight ? `-->
-                        <td rowspan="${l - k + 1}">${op.weight.toFixed(1)}</td>
+                        <td rowspan="${l - k + 1}" class="sum-weight">${op.weight.toFixed(1)}</td>
                         <!--` : op.max ? `-->
-                        <td rowspan="${l - k + 1}">${op.max}単位まで</td>
+                        <td rowspan="${l - k + 1}" class="sum-max">${op.max}単位<br>まで</td>
                         <!--` : `-->
-                        <td rowspan="${l - k + 1}" colspan="${sum.cols}">―</td>
+                        <td rowspan="${l - k + 1}" colspan="${sum.cols}" class="sum-ignore"></td>
                         <!--`).join("")}-->
                      </tr>
                      <!--`).join("")}-->
