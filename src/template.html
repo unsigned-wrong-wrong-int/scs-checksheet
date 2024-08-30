@@ -17,7 +17,7 @@
                <button id="tab-input" class="tab" tabindex="0" role="tab" aria-selected="true" aria-controls="panel-input">
                   <div class="tab-text">成績入力</div>
                </button>
-               <!--${partitions.map(({name, abbr, full}, i) => `-->
+               <!--${divisions.map(({name, abbr, full}, i) => `-->
                <button id="tab-${i}" class="tab" title="${name}" tabindex="-1" role="tab" aria-selected="false" aria-controls="panel-${i}">
                   <div class="tab-name">${abbr}</div>
                   <div class="tab-status"></div>
@@ -120,7 +120,7 @@
                   </tbody>
                </table>
             </div>
-            <!--${partitions.map(({name, full, toeic, intvw, exam, list, test, sum}, i) => `-->
+            <!--${divisions.map(({name, full, toeic, intvw, exam, list, test, sum}, i) => `-->
             <div id="panel-${i}" class="panel" tabindex="-1" role="tabpanel" aria-labelledby="tab-${i}" hidden>
                <h2>${name}</h2>
                <table class="summary-table">
@@ -158,33 +158,37 @@
                <table class="main-table">
                   <thead>
                      <tr>
-                        <th colspan="${test.length}">移行要件</th>
+                        <th colspan="${test.cols}">移行要件</th>
                         <th>科目番号</th>
                         <th>科目名</th>
-                        <th>時期</th>
                         <th>単位数</th>
-                        <th colspan="${sum.length}">重み</th>
+                        <th colspan="${sum.cols}">重み</th>
                      </tr>
                   </thead>
                   <tbody>
                      <!--${list.map((id, j) => `-->
                      <tr>
-                        <!--${test.flatMap(step => step.filter(([[k, l], ]) => j === k).map(([[k, l], f]) => `-->
-                        <td rowspan="${l - k + 1}">${f.min ? `${f.min}単位` : f.max ? `${f.max}単位まで` : ""}</td>
-                        <!--`)).reverse().join("")}-->
-                        <!--${(test[0].length === 0 ? j === 0 : j === test[0].at(-1)[0][1] + 1) ? `-->
-                        <td rowspan="${list.length - j}" colspan="${test.length}">―</td>
-                        <!--` : ""}-->
+                        <!--${test[j].map(([k, l, op]) => op === undefined ? `-->
+                        <td rowspan="${l - k + 1}"></td>
+                        <!--` : op.min ? `-->
+                        <td rowspan="${l - k + 1}">${op.min}単位</td>
+                        <!--` : op.max ? `-->
+                        <td rowspan="${l - k + 1}">${op.max}単位まで</td>
+                        <!--` : `-->
+                        <td rowspan="${l - k + 1}" colspan="${test.cols}">―</td>
+                        <!--`).join("")}-->
                         <td>${typeof id === "string" ? id : "―"}</td>
                         <td>${getSubject(id)[0]}</td>
-                        <td>${"―"}</td>
                         <td>${getSubject(id)[1] ?? "―"}</td>
-                        <!--${j === 0 && sum[0][0][0][0] > 0 ? `-->
-                        <td rowspan="${sum[0][0][0][0]}" colspan="${sum.length}">―</td>
-                        <!--` : ""}-->
-                        <!--${sum.flatMap(step => step.filter(([[k, l], ]) => j === k).map(([[k, l], f]) => `-->
-                        <td rowspan="${l - k + 1}">${f.max ? `${f.max}単位<wbr>まで<wbr>` : ""}${f.weight ? f.weight.toFixed(1) : ""}</td>
-                        <!--`)).join("")}-->
+                        <!--${sum[j].map(([k, l, op]) => op === undefined ? `-->
+                        <td rowspan="${l - k + 1}"></td>
+                        <!--` : op.weight ? `-->
+                        <td rowspan="${l - k + 1}">${op.weight.toFixed(1)}</td>
+                        <!--` : op.max ? `-->
+                        <td rowspan="${l - k + 1}">${op.max}単位まで</td>
+                        <!--` : `-->
+                        <td rowspan="${l - k + 1}" colspan="${sum.cols}">―</td>
+                        <!--`).join("")}-->
                      </tr>
                      <!--`).join("")}-->
                   </tbody>

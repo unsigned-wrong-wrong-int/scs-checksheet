@@ -78,7 +78,7 @@ const readKDB = (year) =>
          // [科目番号, [科目名, 単位数, フラグ, 科目コード]]
          [id, [name, Number(credits), flags(id, name, module, info), code]]);
 
-const tables = await (await fetch(new URL("./tables.json", import.meta.url))).json();
+const divisions = await (await fetch(new URL("./divisions.json", import.meta.url))).json();
 
 const subjects = new Map(
    // 科目番号順にソート
@@ -95,7 +95,7 @@ const subjects = new Map(
 {
    // 要件・重点科目全て
    const ids = Array.from(new Set(
-      tables.flatMap(({list}) => list.filter(id => typeof id === "string"))));
+      divisions.flatMap(({list}) => list.filter(id => typeof id === "string"))));
    // 科目コード → 要件・重点科目の科目番号
    const map = new Map(
       ids.map(id => [subjects.get(id)[3], id]).filter(([code, id]) => code !== id));
@@ -120,6 +120,7 @@ const subjects = new Map(
 
 const data = {
    year,
+   divisions,
    categories,
    specialSubjects,
    subjects: Object.fromEntries(subjects.entries()),

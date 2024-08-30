@@ -145,6 +145,7 @@ span.tab-score-full::before {
 table {
    border-collapse: collapse;
    border: 1px solid var(--tab-border);
+   margin: 1rem;
 }
 
 td, th {
@@ -155,4 +156,14 @@ td, th {
 th {
    background-color: #885588;
    color: var(--page-bg);
+   border-left: 1px solid var(--page-bg);
+   border-right: 1px solid var(--page-bg);
+}
+
+th:first-child {
+   border-left: 1px solid var(--tab-border);
+}
+
+th:last-child {
+   border-right: 1px solid var(--tab-border);
 }
