@@ -208,3 +208,37 @@ th:last-child {
 .test-ignore, .sum-ignore {
    background-color: var(--tab-bg);
 }
+
+button.details {
+   font: inherit;
+   text-decoration: underline #22ccff 4px;
+   color: inherit;
+   background-color: inherit;
+   border: none;
+   cursor: pointer;
+   user-select: text;
+}
+
+button.details[data-status="false"] {
+   text-decoration-color: #ff9999;
+   text-decoration-thickness: 2px;
+   text-decoration-style: double;
+}
+
+button.details[data-status=""] {
+   text-decoration-color: #dddd11;
+   text-decoration-thickness: 6px;
+   text-decoration-style: dotted;
+}
+
+button.details[data-status="true"] {
+   text-decoration-color: #11eecc;
+}
+
+button.details:hover, button.details:focus {
+   font-style: oblique;
+}
+
+button.details:focus-visible {
+   outline: auto;
+}
