@@ -169,6 +169,40 @@ th:last-child {
    border-right: 1px solid var(--tab-border);
 }
 
+td.summary-status {
+   width: 4rem;
+   text-align: center;
+}
+
+td.summary-score {
+   width: 12rem;
+   text-align: right;
+}
+
+td.summary-toeic {
+   width: 10rem;
+   text-align: right;
+}
+
+td.summary-notoeic {
+   width: 10rem;
+   text-align: center;
+}
+
+.summary-score-allot, .summary-toeic-allot {
+   font-size: smaller;
+}
+
+.summary-score-allot::before, .summary-toeic-allot::before {
+   content: "/";
+}
+
+td.summary-exam, td.summary-intvw {
+   width: 4rem;
+   font-size: smaller;
+   text-align: center;
+}
+
 .subj-id {
    width: 7rem;
    text-align: center;
@@ -181,6 +215,14 @@ th:last-child {
 .subj-credits {
    width: 3rem;
    text-align: center;
+}
+
+.subj-test {
+   min-width: 4rem;
+}
+
+.subj-sum {
+   min-width: 4rem;
 }
 
 .test-blank, .sum-blank {
@@ -241,4 +283,12 @@ button.details:hover, button.details:focus {
 
 button.details:focus-visible {
    outline: auto;
+}
+
+:popover-open {
+   box-shadow: 4px 4px 4px #333333;
+   border: 1px solid var(--tab-border);
+   color: var(--page-txt);
+   background-color: var(--page-bg);
+   padding: 0;
 }
