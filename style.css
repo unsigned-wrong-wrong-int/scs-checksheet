@@ -134,11 +134,11 @@ div.tab-score {
    text-align: right;
 }
 
-span.tab-score-full {
+span.tab-score-allot {
    font-size: smaller;
 }
 
-span.tab-score-full::before {
+span.tab-score-allot::before {
    content: "/";
 }
 

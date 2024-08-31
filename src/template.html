@@ -17,11 +17,11 @@
                <button id="tab-input" class="tab" tabindex="0" role="tab" aria-selected="true" aria-controls="panel-input">
                   <div class="tab-text">成績入力</div>
                </button>
-               <!--${divisions.map(({name, abbr, full}, i) => `-->
+               <!--${divisions.map(({name, abbr, allot}, i) => `-->
                <button id="tab-${i}" class="tab" title="${name}" tabindex="-1" role="tab" aria-selected="false" aria-controls="panel-${i}">
                   <div class="tab-name">${abbr}</div>
                   <div class="tab-status"></div>
-                  <div class="tab-score"><span class="tab-score-value"></span><span class="tab-score-full">${full}</span></div>
+                  <div class="tab-score"><span class="tab-score-value"></span><span class="tab-score-allot">${allot}</span></div>
                </button>
                <!--`).join("")}-->
             </div>
@@ -120,7 +120,7 @@
                   </tbody>
                </table>
             </div>
-            <!--${divisions.map(({name, full, toeic, intvw, exam, list, test, sum}, i) => `-->
+            <!--${divisions.map(({name, allot, toeic, intvw, exam, list, test, sum}, i) => `-->
             <div id="panel-${i}" class="panel" tabindex="-1" role="tabpanel" aria-labelledby="tab-${i}" hidden>
                <h2>${name}</h2>
                <table class="summary-table">
@@ -140,7 +140,7 @@
                   <tbody>
                      <tr>
                         <td class="summary-status"></td>
-                        <td class="summary-score"><span></span><span>${full}</span></td>
+                        <td class="summary-score"><span></span><span>${allot}</span></td>
                         <!--${toeic ? `-->
                         <td class="summary-toeic"><span></span><span>${toeic}</span></td>
                         <!--` : `-->
