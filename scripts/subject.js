@@ -1,5 +1,8 @@
 const data = await (await fetch(new URL("../data/data.json", import.meta.url))).json();
 
+export
+const year = data.year;
+
 const internal = {
    flags: Symbol("flags"),
    code: Symbol("code"),
