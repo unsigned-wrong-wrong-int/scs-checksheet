@@ -124,7 +124,7 @@ const ResultGroup = class {
    }
 
    update(result, record) {
-      if ((record.flags & this.flag) !== this.flag) return;
+      if ((record[internal.flags] & this.flag) !== this.flag) return;
       this.valid = this.valid.filter(({subject}) => subject.code !== result.code);
       this.valid.push(...result.getValid(this.flag));
       this.scored = this.scored.filter(({subject}) => subject.code !== result.code);
@@ -210,7 +210,7 @@ const Item = class {
    constructor(index, record) {
       this.#index = index;
       this.#record = record;
-      this.#credits = record.credits;
+      this.#credits = record.subject.credits;
       this.#weightX10 = null;
    }
 
@@ -243,9 +243,12 @@ const Op = class {
    }
 
    [internal.apply](list, comp) {
-      const span = list.slice(...this.#range);
-      const items = span.flat().sort(comp);
-      span.forEach(row => row.length = 0);
+      const items = list.slice(...this.#range).flat().sort(comp);
+      const span = new Array(list.length);
+      for (let i = this.#range[0]; i < this.#range[1]; ++i) {
+         span[i] = list[i];
+         span[i].length = 0;
+      }
       return this.#func(span, items, this.#param);
    }
 };
@@ -291,7 +294,7 @@ const SumOp = class extends Op {
 
 const testMin = (list, items, credits) => {
    const result = {true: [], false: [], status: true};
-   const strict = 0, any = 0;
+   let strict = 0, any = 0;
    for (const item of items) {
       if (item.status) {
          strict += item.credits;
