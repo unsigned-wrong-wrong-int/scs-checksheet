@@ -25,27 +25,32 @@ body {
    color: var(--header-txt);
 }
 
+button, select, input {
+   font: inherit;
+}
+
 header {
    grid-row: 1;
    grid-column: 1 / 3;
 }
 
 header>h1 {
-   margin: 0.2rem 0;
+   margin: 0;
    padding-left: 1rem;
+   font-size: larger;
    text-align: center;
 }
 
 #header-year {
    position: static;
-   font: initial;
+   font-size: smaller;
    padding-left: 1rem;
 }
 
 footer {
    grid-row: 3;
    grid-column: 1 / 3;
-   padding: 0.2rem 0;
+   padding: 0;
    text-align: center;
 }
 
@@ -189,7 +194,7 @@ td.summary-notoeic {
    text-align: center;
 }
 
-.summary-score-allot, .summary-toeic-allot {
+.summary-score-allot, .summary-toeic-allot, .summary-misc-allot {
    font-size: smaller;
 }
 
@@ -212,7 +217,7 @@ td.summary-exam, td.summary-intvw {
    width: 20rem;
 }
 
-.subj-credits {
+.subj-credits, .subj-curr, .subj-pass {
    width: 3rem;
    text-align: center;
 }
@@ -223,6 +228,19 @@ td.summary-exam, td.summary-intvw {
 
 .subj-sum {
    min-width: 4rem;
+}
+
+.subj-weight {
+   width: 3rem;
+   text-align: center;
+}
+
+.subj-score {
+   width: 4rem;
+}
+
+td.subj-score {
+   text-align: right;
 }
 
 .test-blank, .sum-blank {
@@ -262,19 +280,15 @@ button.details {
 }
 
 button.details[data-status="false"] {
-   text-decoration-color: #ff9999;
-   text-decoration-thickness: 2px;
-   text-decoration-style: double;
-}
-
-button.details[data-status=""] {
-   text-decoration-color: #dddd11;
+   text-decoration-color: #ff8877;
    text-decoration-thickness: 6px;
    text-decoration-style: dotted;
 }
 
-button.details[data-status="true"] {
-   text-decoration-color: #11eecc;
+button.details[data-status=""] {
+   text-decoration-color: #ccdd11;
+   text-decoration-thickness: 2px;
+   text-decoration-style: double;
 }
 
 button.details:hover, button.details:focus {
@@ -283,6 +297,11 @@ button.details:hover, button.details:focus {
 
 button.details:focus-visible {
    outline: auto;
+}
+
+.summary-table td {
+   font-size: larger;
+   padding: 8px;
 }
 
 :popover-open {

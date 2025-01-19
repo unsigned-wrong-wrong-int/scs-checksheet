@@ -54,11 +54,11 @@ const Record = class {
    #status;
    #score;
 
-   constructor(subject, year, status, score) {
+   constructor(subject, year_, status, score) {
       this.#subject = subject;
-      this.#year = year;
+      this.#year = year_;
       this.#flags = subject[internal.flags];
-      if (year !== null && year < thisYear) {
+      if (year_ !== null && year_ < year) {
          this.#flags |= 1;
       }
       this.#status = status;
@@ -156,7 +156,7 @@ const RecordList = class {
    }
 
    remove(record) {
-      this.#all.splice(this.#all.indexOf(record));
+      this.#all.splice(this.#all.indexOf(record), 1);
       const code = record.subject[internal.code];
       const result = this.#map.get(code);
       result.remove(record);
@@ -443,7 +443,7 @@ const Division = class {
       let score = 0;
       for (const item of sumList.flat()) {
          if (item.weightX10) {
-            score += item.score;
+            score += item.scoreX10;
          }
       }
       score /= 10;

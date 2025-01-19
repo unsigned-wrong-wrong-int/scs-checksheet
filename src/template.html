@@ -47,10 +47,10 @@
                         <td class="subj-name">${name}</td>
                         <td class="subj-credits">${credits}</td>
                         <td class="subj-status">
-                           <select class="subj-status-select">
+                           <select class="subj-status-select" data-id="${id}">
                               <option selected>履修中</option>
-                              <option>合格</option>
-                              <option>不合格</option>
+                              <option>修得済</option>
+                              <option>未修得</option>
                            </select>
                         </td>
                      </tr>
@@ -80,40 +80,45 @@
                      </tr>
                   </thead>
                   <tbody>
-                     <tr>
+                     <tr id="subj-new">
                         <td class="subj-year">
-                           <input type="number" class="subj-year-input" min="2023" max="2024" step="1" value="2024" required>
+                           <select id="subj-year-input">
+                              <option selected>${year}</option>
+                              <option>${year - 1}</option>
+                           </select>
                         </td>
                         <td class="subj-id">
-                           <input type="text" class="subj-id-input" pattern="[0-9A-Z]{6}" required>
+                           <input type="text" id="subj-id-input" pattern="[0-9A-Z]{6}" required>
                         </td>
                         <td class="subj-name">
-                           <output class="subj-name-output"></output>
+                           <output id="subj-name-output" for="subj-id-input"></output>
                         </td>
                         <td class="subj-credits">
-                           <output class="subj-credits-output"></output>
+                           <output id="subj-credits-output" for="subj-id-input"></output>
                         </td>
                         <td class="subj-score">
-                           <input type="number" class="subj-score-input" min="0" max="100" step="1">
+                           <input type="number" id="subj-score-input" min="0" max="100" step="1">
                         </td>
                         <td class="subj-buttons">
-                           <button class="subj-add">追加</button>
-                        </td>
-                     </tr>
-                     <tr id="subj-row" hidden>
-                        <td class="subj-year"></td>
-                        <td class="subj-id"></td>
-                        <td class="subj-name"></td>
-                        <td class="subj-credits"></td>
-                        <td class="subj-score">
-                           <input type="number" class="subj-score-input" min="0" max="100" step="1">
-                        </td>
-                        <td class="subj-buttons">
-                           <button class="subj-delete">削除</button>
+                           <button id="subj-add" disabled>追加</button>
                         </td>
                      </tr>
                   </tbody>
                </table>
+               <template id="subj-row">
+                  <tr>
+                     <td class="subj-year"></td>
+                     <td class="subj-id"></td>
+                     <td class="subj-name"></td>
+                     <td class="subj-credits"></td>
+                     <td class="subj-score">
+                        <input type="number" class="subj-score-input" min="0" max="100" step="1">
+                     </td>
+                     <td class="subj-buttons">
+                        <button class="subj-delete">削除</button>
+                     </td>
+                  </tr>
+               </template>
                <h2>TOEIC IP</h2>
                <ul>
                   <li>秋に実施されるTOEIC IPテストのスコア</li>
@@ -138,7 +143,7 @@
                         <th class="summary-score">成績点</th>
                         <th class="summary-toeic">TOEIC</th>
                         <!--${intvw ? `-->
-                        <th class="summary-intv">面接</th>
+                        <th class="summary-intvw">面接</th>
                         <!--` : ""}-->
                         <!--${exam ? `-->
                         <th class="summary-exam">試験</th>
@@ -159,10 +164,10 @@
                         <td class="summary-notoeic">―</td>
                         <!--`}-->
                         <!--${intvw ? `-->
-                        <td class="summary-intvw">${intvw}</td>
+                        <td class="summary-intvw"><span class="summary-misc-allot">${intvw}</span></td>
                         <!--` : ""}-->
                         <!--${exam ? `-->
-                        <td class="summary-exam">${exam}</td>
+                        <td class="summary-exam"><span class="summary-misc-allot">${exam}</span></td>
                         <!--` : ""}-->
                      </tr>
                   </tbody>
@@ -224,14 +229,16 @@
                      </tr>
                   </thead>
                   <tbody>
-                     <tr id="status-row" hidden>
-                        <td class="subj-id"></td>
-                        <td class="subj-name"></td>
-                        <td class="subj-curr"></td>
-                        <td class="subj-pass"></td>
-                     </tr>
                   </tbody>
                </table>
+               <template id="status-row">
+                  <tr>
+                     <td class="subj-id"></td>
+                     <td class="subj-name"></td>
+                     <td class="subj-curr"></td>
+                     <td class="subj-pass"></td>
+                  </tr>
+               </template>
             </div>
             <div id="score-details" popover>
                <table>
@@ -245,15 +252,17 @@
                      </tr>
                   </thead>
                   <tbody>
-                     <tr id="score-row" hidden>
-                        <td class="subj-id"></td>
-                        <td class="subj-name"></td>
-                        <td class="subj-credits"></td>
-                        <td class="subj-weight"></td>
-                        <td class="subj-score"></td>
-                     </tr>
                   </tbody>
                </table>
+               <template id="score-row">
+                  <tr>
+                     <td class="subj-id"></td>
+                     <td class="subj-name"></td>
+                     <td class="subj-credits"></td>
+                     <td class="subj-weight"></td>
+                     <td class="subj-score"></td>
+                  </tr>
+               </template>
             </div>
          </div>
       </main>

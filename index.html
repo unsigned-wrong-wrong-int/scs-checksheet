@@ -169,10 +169,10 @@
 <td class="subj-name">ファーストイヤーセミナー</td>
 <td class="subj-credits">1</td>
 <td class="subj-status">
-<select class="subj-status-select">
+<select class="subj-status-select" data-id="0">
 <option selected>履修中</option>
-<option>合格</option>
-<option>不合格</option>
+<option>修得済</option>
+<option>未修得</option>
 </select>
 </td>
 </tr>
@@ -180,10 +180,10 @@
 <td class="subj-name">学問への誘い</td>
 <td class="subj-credits">1</td>
 <td class="subj-status">
-<select class="subj-status-select">
+<select class="subj-status-select" data-id="1">
 <option selected>履修中</option>
-<option>合格</option>
-<option>不合格</option>
+<option>修得済</option>
+<option>未修得</option>
 </select>
 </td>
 </tr>
@@ -191,10 +191,10 @@
 <td class="subj-name">English Reading Skills I</td>
 <td class="subj-credits">1</td>
 <td class="subj-status">
-<select class="subj-status-select">
+<select class="subj-status-select" data-id="2">
 <option selected>履修中</option>
-<option>合格</option>
-<option>不合格</option>
+<option>修得済</option>
+<option>未修得</option>
 </select>
 </td>
 </tr>
@@ -202,10 +202,10 @@
 <td class="subj-name">English Presentation Skills I</td>
 <td class="subj-credits">1</td>
 <td class="subj-status">
-<select class="subj-status-select">
+<select class="subj-status-select" data-id="3">
 <option selected>履修中</option>
-<option>合格</option>
-<option>不合格</option>
+<option>修得済</option>
+<option>未修得</option>
 </select>
 </td>
 </tr>
@@ -213,10 +213,10 @@
 <td class="subj-name">English Reading Skills II</td>
 <td class="subj-credits">1</td>
 <td class="subj-status">
-<select class="subj-status-select">
+<select class="subj-status-select" data-id="4">
 <option selected>履修中</option>
-<option>合格</option>
-<option>不合格</option>
+<option>修得済</option>
+<option>未修得</option>
 </select>
 </td>
 </tr>
@@ -224,10 +224,10 @@
 <td class="subj-name">English Presentation Skills II</td>
 <td class="subj-credits">1</td>
 <td class="subj-status">
-<select class="subj-status-select">
+<select class="subj-status-select" data-id="5">
 <option selected>履修中</option>
-<option>合格</option>
-<option>不合格</option>
+<option>修得済</option>
+<option>未修得</option>
 </select>
 </td>
 </tr>
@@ -235,10 +235,10 @@
 <td class="subj-name">情報リテラシー(講義)</td>
 <td class="subj-credits">1</td>
 <td class="subj-status">
-<select class="subj-status-select">
+<select class="subj-status-select" data-id="6">
 <option selected>履修中</option>
-<option>合格</option>
-<option>不合格</option>
+<option>修得済</option>
+<option>未修得</option>
 </select>
 </td>
 </tr>
@@ -246,10 +246,10 @@
 <td class="subj-name">情報リテラシー(演習)</td>
 <td class="subj-credits">1</td>
 <td class="subj-status">
-<select class="subj-status-select">
+<select class="subj-status-select" data-id="7">
 <option selected>履修中</option>
-<option>合格</option>
-<option>不合格</option>
+<option>修得済</option>
+<option>未修得</option>
 </select>
 </td>
 </tr>
@@ -257,10 +257,10 @@
 <td class="subj-name">データサイエンス</td>
 <td class="subj-credits">2</td>
 <td class="subj-status">
-<select class="subj-status-select">
+<select class="subj-status-select" data-id="8">
 <option selected>履修中</option>
-<option>合格</option>
-<option>不合格</option>
+<option>修得済</option>
+<option>未修得</option>
 </select>
 </td>
 </tr>
@@ -268,10 +268,10 @@
 <td class="subj-name">基礎体育(春)</td>
 <td class="subj-credits">0.5</td>
 <td class="subj-status">
-<select class="subj-status-select">
+<select class="subj-status-select" data-id="9">
 <option selected>履修中</option>
-<option>合格</option>
-<option>不合格</option>
+<option>修得済</option>
+<option>未修得</option>
 </select>
 </td>
 </tr>
@@ -279,10 +279,10 @@
 <td class="subj-name">基礎体育(秋)</td>
 <td class="subj-credits">0.5</td>
 <td class="subj-status">
-<select class="subj-status-select">
+<select class="subj-status-select" data-id="10">
 <option selected>履修中</option>
-<option>合格</option>
-<option>不合格</option>
+<option>修得済</option>
+<option>未修得</option>
 </select>
 </td>
 </tr>
@@ -311,27 +311,33 @@
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr id="subj-new">
 <td class="subj-year">
-<input type="number" class="subj-year-input" min="2023" max="2024" step="1" value="2024" required>
+<select id="subj-year-input">
+<option selected>2024</option>
+<option>2023</option>
+</select>
 </td>
 <td class="subj-id">
-<input type="text" class="subj-id-input" pattern="[0-9A-Z]{6}" required>
+<input type="text" id="subj-id-input" pattern="[0-9A-Z]{6}" required>
 </td>
 <td class="subj-name">
-<output class="subj-name-output"></output>
+<output id="subj-name-output" for="subj-id-input"></output>
 </td>
 <td class="subj-credits">
-<output class="subj-credits-output"></output>
+<output id="subj-credits-output" for="subj-id-input"></output>
 </td>
 <td class="subj-score">
-<input type="number" class="subj-score-input" min="0" max="100" step="1">
+<input type="number" id="subj-score-input" min="0" max="100" step="1">
 </td>
 <td class="subj-buttons">
-<button class="subj-add">追加</button>
+<button id="subj-add" disabled>追加</button>
 </td>
 </tr>
-<tr id="subj-row" hidden>
+</tbody>
+</table>
+<template id="subj-row">
+<tr>
 <td class="subj-year"></td>
 <td class="subj-id"></td>
 <td class="subj-name"></td>
@@ -343,8 +349,7 @@
 <button class="subj-delete">削除</button>
 </td>
 </tr>
-</tbody>
-</table>
+</template>
 <h2>TOEIC IP</h2>
 <ul>
 <li>秋に実施されるTOEIC IPテストのスコア</li>
@@ -3138,7 +3143,7 @@
 <td class="summary-toeic">
 <span class="summary-toeic-value"></span><span class="summary-toeic-allot">200</span>
 </td>
-<td class="summary-exam">500</td>
+<td class="summary-exam"><span class="summary-misc-allot">500</span></td>
 </tr>
 </tbody>
 </table>
@@ -3251,7 +3256,7 @@
 <th class="summary-status">状況</th>
 <th class="summary-score">成績点</th>
 <th class="summary-toeic">TOEIC</th>
-<th class="summary-intv">面接</th>
+<th class="summary-intvw">面接</th>
 </tr>
 </thead>
 <tbody>
@@ -3261,7 +3266,7 @@
 <span class="summary-score-value"></span><span class="summary-score-allot">1130</span>
 </td>
 <td class="summary-notoeic">―</td>
-<td class="summary-intvw">100</td>
+<td class="summary-intvw"><span class="summary-misc-allot">100</span></td>
 </tr>
 </tbody>
 </table>
@@ -3735,14 +3740,16 @@
 </tr>
 </thead>
 <tbody>
-<tr id="status-row" hidden>
+</tbody>
+</table>
+<template id="status-row">
+<tr>
 <td class="subj-id"></td>
 <td class="subj-name"></td>
 <td class="subj-curr"></td>
 <td class="subj-pass"></td>
 </tr>
-</tbody>
-</table>
+</template>
 </div>
 <div id="score-details" popover>
 <table>
@@ -3756,15 +3763,17 @@
 </tr>
 </thead>
 <tbody>
-<tr id="score-row" hidden>
+</tbody>
+</table>
+<template id="score-row">
+<tr>
 <td class="subj-id"></td>
 <td class="subj-name"></td>
 <td class="subj-credits"></td>
 <td class="subj-weight"></td>
 <td class="subj-score"></td>
 </tr>
-</tbody>
-</table>
+</template>
 </div>
 </div>
 </main>
